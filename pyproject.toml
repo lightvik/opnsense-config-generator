@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "opnsense-config-generator"
-version = "0.0.1"
+version = "0.0.2"
 description = "Generate OPNsense config.xml from a documented Jinja2 template"
 requires-python = ">=3.12"
 dependencies = [
