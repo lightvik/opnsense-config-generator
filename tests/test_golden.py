@@ -55,3 +55,7 @@ def test_golden_minimal(update_snapshots: bool) -> None:
 
 def test_golden_typical(update_snapshots: bool) -> None:
     _run_golden("typical", update_snapshots)
+
+
+def test_golden_full(update_snapshots: bool) -> None:
+    _run_golden("full", update_snapshots)

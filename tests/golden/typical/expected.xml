@@ -219,6 +219,6 @@
   <revision>
     <username>opnsense-config-generator</username>
     <time>TIMESTAMP</time>
-    <description>Imported by opnsense-config-generator v0.1.0 (OPNsense 26.1.6)</description>
+    <description>Imported by opnsense-config-generator v0.0.3 (OPNsense 26.1.6)</description>
   </revision>
 </opnsense>

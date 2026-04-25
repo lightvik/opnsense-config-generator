@@ -1,0 +1,872 @@
+<opnsense>
+  <version>26.1.6</version>
+  <lastchange/>
+  <system>
+    <optimization>normal</optimization>
+    <hostname>fw01</hostname>
+    <domain>home.local</domain>
+    <dnsallowoverride>1</dnsallowoverride>
+    <dnsallowoverride_exclude/>
+    <dnsserver>8.8.8.8</dnsserver>
+    <dnsserver>8.8.4.4</dnsserver>
+    <group>
+      <name>admins</name>
+      <description>System Administrators</description>
+      <scope>system</scope>
+      <gid>1999</gid>
+      <member>0</member>
+      <priv>page-all</priv>
+    </group>
+    <user>
+      <name>root</name>
+      <descr>System Administrator</descr>
+      <scope>system</scope>
+      <groupname>admins</groupname>
+      <password>BCRYPT_HASH</password>
+      <uid>0</uid>
+      <shell>/bin/sh</shell>
+    </user>
+    <timezone>Europe/Moscow</timezone>
+    <timeservers>0.opnsense.pool.ntp.org 1.opnsense.pool.ntp.org 2.opnsense.pool.ntp.org 3.opnsense.pool.ntp.org</timeservers>
+    <webgui>
+      <protocol>https</protocol>
+    </webgui>
+    <ssh>
+      <group>admins</group>
+      <enabled>enabled</enabled>
+    </ssh>
+    <disablenatreflection>yes</disablenatreflection>
+    <usevirtualterminal>1</usevirtualterminal>
+    <ipv6allow>1</ipv6allow>
+    <powerd_ac_mode>hadp</powerd_ac_mode>
+    <powerd_battery_mode>hadp</powerd_battery_mode>
+    <powerd_normal_mode>hadp</powerd_normal_mode>
+    <bogons>
+      <interval>monthly</interval>
+    </bogons>
+    <pf_share_forward>1</pf_share_forward>
+    <lb_use_sticky>1</lb_use_sticky>
+    <rrdbackup>-1</rrdbackup>
+    <netflowbackup>-1</netflowbackup>
+    <backup>
+      <git>
+        <enabled>1</enabled>
+        <url>ssh://git@github.com/user/opnsense-backup.git</url>
+        <branch>main</branch>
+        <force_push>0</force_push>
+        <user>git-backup</user>
+      </git>
+    </backup>
+  </system>
+  <interfaces>
+    <wan>
+      <enable>1</enable>
+      <if>vtnet0</if>
+      <mtu/>
+      <ipaddr>dhcp</ipaddr>
+      <ipaddrv6>dhcp6</ipaddrv6>
+      <blockpriv>1</blockpriv>
+      <blockbogons>1</blockbogons>
+      <dhcphostname/>
+      <media/>
+      <mediaopt/>
+      <dhcp6-ia-pd-len>0</dhcp6-ia-pd-len>
+    </wan>
+    <lan>
+      <enable>1</enable>
+      <if>vtnet1</if>
+      <mtu/>
+      <ipaddr>192.168.1.1</ipaddr>
+      <subnet>24</subnet>
+      <ipaddrv6>idassoc6</ipaddrv6>
+      <subnetv6>64</subnetv6>
+      <track6-interface>wan</track6-interface>
+      <track6-prefix-id>0</track6-prefix-id>
+      <dhcphostname/>
+      <media/>
+      <mediaopt/>
+      <dhcp6-ia-pd-len>0</dhcp6-ia-pd-len>
+    </lan>
+    <opt1>
+      <enable>1</enable>
+      <descr>DMZ</descr>
+      <if>vtnet2</if>
+      <mtu/>
+      <ipaddr>10.0.0.1</ipaddr>
+      <subnet>24</subnet>
+      <dhcphostname/>
+      <media/>
+      <mediaopt/>
+      <dhcp6-ia-pd-len>0</dhcp6-ia-pd-len>
+    </opt1>
+  </interfaces>
+  <ca>
+    <refid>d60a347f</refid>
+    <descr>My CA</descr>
+    <crt>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJwekNDQVUyZ0F3SUJBZ0lVQUxmQ0lrZz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=</crt>
+    <prv>LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR0hBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJHMHdhd0lCQVFRZz0KLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLQo=</prv>
+    <serial>1</serial>
+  </ca>
+  <cert>
+    <refid>b8f01be2</refid>
+    <descr>VPN Server Cert</descr>
+    <caref>deadbeef</caref>
+    <crt>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJwekNDQVUyZ0F3SUJBZ0lVQUxmQ0lrZz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=</crt>
+    <prv>LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR0hBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJHMHdhd0lCQVFRZz0KLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLQo=</prv>
+  </cert>
+  <vlans>
+    <vlan>
+      <if>vtnet0</if>
+      <tag>100</tag>
+      <pcp>0</pcp>
+      <descr>VLAN 100</descr>
+      <vlanif>vtnet0.100</vlanif>
+    </vlan>
+    <vlan>
+      <if>vtnet0</if>
+      <tag>200</tag>
+      <pcp>0</pcp>
+      <descr>VLAN 200</descr>
+      <vlanif>vtnet0.200</vlanif>
+    </vlan>
+  </vlans>
+  <bridges>
+    <bridged>
+      <bridgeif>bridge0</bridgeif>
+      <member>vtnet2</member>
+      <member>vtnet3</member>
+      <descr>LAN bridge</descr>
+      <maxaddr>100</maxaddr>
+      <timeout>240</timeout>
+    </bridged>
+  </bridges>
+  <laggs>
+    <lagg>
+      <laggif>lagg0</laggif>
+      <proto>lacp</proto>
+      <members>igb0</members>
+      <members>igb1</members>
+      <laggport>igb0</laggport>
+      <laggport>igb1</laggport>
+      <descr>LACP uplink</descr>
+    </lagg>
+  </laggs>
+  <gateways>
+    <gateway_item>
+      <name>GW_WAN</name>
+      <interface>wan</interface>
+      <gateway>203.0.113.1</gateway>
+      <ipprotocol>inet</ipprotocol>
+      <descr>WAN Gateway</descr>
+      <defaultgw/>
+      <weight>1</weight>
+      <interval>1</interval>
+      <loss_interval>2</loss_interval>
+      <time_period>60</time_period>
+      <alert_interval>1</alert_interval>
+    </gateway_item>
+    <gateway_item>
+      <name>GW_WAN6</name>
+      <interface>wan</interface>
+      <gateway>2001:db8::1</gateway>
+      <ipprotocol>inet6</ipprotocol>
+      <descr>WAN IPv6 Gateway</descr>
+      <defaultgw/>
+      <weight>1</weight>
+      <interval>1</interval>
+      <loss_interval>2</loss_interval>
+      <time_period>60</time_period>
+      <alert_interval>1</alert_interval>
+    </gateway_item>
+  </gateways>
+  <staticroutes>
+    <route>
+      <network>10.0.0.0/8</network>
+      <gateway>GW_WAN</gateway>
+      <descr>Office network</descr>
+      <uuid>2656699d-a460-5840-93df-99004c22049f</uuid>
+    </route>
+    <route>
+      <network>172.16.0.0/12</network>
+      <gateway>192.168.1.254</gateway>
+      <descr>Partner network</descr>
+      <uuid>68d71f66-d485-5246-a4a4-0a9283c88369</uuid>
+    </route>
+  </staticroutes>
+  <aliases>
+    <alias>
+      <name>RFC1918</name>
+      <type>network</type>
+      <descr>Private networks</descr>
+      <content>10.0.0.0/8
+172.16.0.0/12
+192.168.0.0/16</content>
+      <enabled>1</enabled>
+    </alias>
+    <alias>
+      <name>DNS_PORTS</name>
+      <type>port</type>
+      <content>53
+853</content>
+      <enabled>1</enabled>
+    </alias>
+    <alias>
+      <name>ADMIN_HOSTS</name>
+      <type>host</type>
+      <descr>Management workstations</descr>
+      <content>192.168.1.10
+192.168.1.11</content>
+      <enabled>1</enabled>
+    </alias>
+  </aliases>
+  <filter>
+    <rule>
+      <type>pass</type>
+      <ipprotocol>inet</ipprotocol>
+      <descr>Default allow LAN to any rule</descr>
+      <interface>lan</interface>
+      <direction>in</direction>
+      <quick/>
+      <source>
+        <network>lan</network>
+      </source>
+      <destination>
+        <any/>
+      </destination>
+      <tracker>33658ee1-3dbc-5ed1-9985-caf743ab30a1</tracker>
+    </rule>
+    <rule>
+      <type>pass</type>
+      <ipprotocol>inet6</ipprotocol>
+      <descr>Default allow LAN IPv6 to any rule</descr>
+      <interface>lan</interface>
+      <direction>in</direction>
+      <quick/>
+      <source>
+        <network>lan</network>
+      </source>
+      <destination>
+        <any/>
+      </destination>
+      <tracker>65c3e472-5789-5c59-bc5c-9d841879268b</tracker>
+    </rule>
+    <rule>
+      <type>block</type>
+      <ipprotocol>inet</ipprotocol>
+      <descr>Block RFC1918 from DMZ</descr>
+      <log/>
+      <interface>lan</interface>
+      <direction>in</direction>
+      <quick/>
+      <source>
+        <network>opt1</network>
+      </source>
+      <destination>
+        <address>RFC1918</address>
+      </destination>
+      <tracker>f6b31aeb-21da-50b3-992f-bd74a8118ee0</tracker>
+    </rule>
+  </filter>
+  <nat>
+    <outbound>
+      <mode>hybrid</mode>
+      <rule>
+        <interface>wan</interface>
+        <source>
+          <network>192.168.1.0/24</network>
+        </source>
+        <destination>
+          <any/>
+        </destination>
+        <descr>LAN outbound NAT</descr>
+      </rule>
+    </outbound>
+    <rule>
+      <interface>wan</interface>
+      <protocol>tcp</protocol>
+      <source>
+        <any/>
+      </source>
+      <destination>
+        <address>203.0.113.1</address>
+        <port>8080</port>
+      </destination>
+      <target>192.168.1.10</target>
+      <local-port>80</local-port>
+      <descr>HTTP redirect to web server</descr>
+      <associated-rule-id>add associated filter rule</associated-rule-id>
+    </rule>
+  </nat>
+  <dnsmasq>
+    <enable>1</enable>
+    <port>53053</port>
+    <interface>lan</interface>
+    <dhcp>
+      <enable_ra>1</enable_ra>
+    </dhcp>
+    <dhcp_ranges>
+      <interface>lan</interface>
+      <start_addr>192.168.1.100</start_addr>
+      <end_addr>192.168.1.199</end_addr>
+    </dhcp_ranges>
+    <dhcp_ranges>
+      <interface>lan</interface>
+      <start_addr>::1000</start_addr>
+      <end_addr>::2000</end_addr>
+      <constructor>lan</constructor>
+      <ra_mode>slaac</ra_mode>
+    </dhcp_ranges>
+  </dnsmasq>
+  <unbound>
+    <enable>1</enable>
+    <dnssec/>
+    <hideidentity/>
+    <hideversion/>
+    <hosts>
+      <host>nas</host>
+      <domain>home.local</domain>
+      <ip>192.168.1.20</ip>
+      <descr>NAS storage</descr>
+    </hosts>
+    <domainoverrides>
+      <domain>corp.example.com</domain>
+      <ip>10.0.0.53</ip>
+      <descr>Corporate DNS</descr>
+    </domainoverrides>
+  </unbound>
+  <rrd>
+    <enable/>
+  </rrd>
+  <ntpd>
+    <prefer>0.opnsense.pool.ntp.org</prefer>
+    <ispool>0.opnsense.pool.ntp.org 1.opnsense.pool.ntp.org 2.opnsense.pool.ntp.org</ispool>
+  </ntpd>
+  <OPNsense>
+    <wireguard>
+      <general>
+        <enabled>1</enabled>
+      </general>
+      <server>
+        <servers>
+          <server uuid="26a1be3c-9b48-5dc9-a787-d37eb4350535">
+            <enabled>1</enabled>
+            <name>wg0</name>
+            <instance>0</instance>
+            <pubkey>cHVibGlja2V5aGVyZTEyMzQ1Njc4OTBhYmNkZWZnaA==</pubkey>
+            <privkey>cHJpdmF0ZWtleWhlcmUxMjM0NTY3ODkwYWJjZGVmZ2g=</privkey>
+            <port>51820</port>
+            <tunneladdress>10.0.0.1/24</tunneladdress>
+            <disableroutes>0</disableroutes>
+            <peers>dcc134e5-fd4a-5af4-93aa-03ae4931ea05</peers>
+            <debug>0</debug>
+          </server>
+        </servers>
+      </server>
+      <client>
+        <clients>
+          <client uuid="dcc134e5-fd4a-5af4-93aa-03ae4931ea05">
+            <enabled>1</enabled>
+            <name>peer1</name>
+            <pubkey>cGVlcnB1YmtleWhlcmUxMjM0NTY3ODkwYWJjZGVm</pubkey>
+            <tunneladdress>10.0.0.2/32</tunneladdress>
+            <serveraddress>vpn.example.com</serveraddress>
+            <serverport>51820</serverport>
+            <keepalive>25</keepalive>
+          </client>
+        </clients>
+      </client>
+    </wireguard>
+    <OpenVPN>
+      <Instances>
+        <Instance uuid="142fda46-a698-5aff-985c-b21f1843ed6c">
+          <vpnid>1</vpnid>
+          <enabled>1</enabled>
+          <dev_type>tun</dev_type>
+          <verb>3</verb>
+          <proto>udp</proto>
+          <port>1194</port>
+          <topology>subnet</topology>
+          <role>server</role>
+          <server>10.8.0.0/24</server>
+          <ca>My CA</ca>
+          <cert>VPN Server Cert</cert>
+          <remote_cert_tls>0</remote_cert_tls>
+          <verify_client_cert>require</verify_client_cert>
+          <auth>SHA256</auth>
+          <data-ciphers>AES-256-GCM,AES-128-GCM,CHACHA20-POLY1305</data-ciphers>
+          <data-ciphers-fallback>AES-256-CBC</data-ciphers-fallback>
+          <push_route>192.168.1.0/24</push_route>
+          <dns_servers>192.168.1.1</dns_servers>
+          <keepalive_interval>10</keepalive_interval>
+          <keepalive_timeout>60</keepalive_timeout>
+          <username_as_common_name>0</username_as_common_name>
+          <description>Road Warrior VPN</description>
+        </Instance>
+      </Instances>
+      <StaticKeys/>
+      <Overwrites/>
+    </OpenVPN>
+    <Swanctl>
+      <Connections>
+        <Connection uuid="24911d50-19e4-5d40-a3b8-6fed90b2b0bc">
+          <enabled>1</enabled>
+          <proposals>default</proposals>
+          <unique>no</unique>
+          <aggressive>0</aggressive>
+          <version>2</version>
+          <mobike>1</mobike>
+          <local_addrs>203.0.113.1</local_addrs>
+          <remote_addrs>198.51.100.1</remote_addrs>
+          <encap>0</encap>
+          <pools/>
+          <send_certreq>1</send_certreq>
+          <description>Site-to-Site VPN</description>
+        </Connection>
+      </Connections>
+      <locals>
+        <local uuid="4cff6b0a-2d16-512b-abfd-e595ba719218">
+          <enabled>1</enabled>
+          <connection>24911d50-19e4-5d40-a3b8-6fed90b2b0bc</connection>
+          <round>0</round>
+          <auth>psk</auth>
+          <id>203.0.113.1</id>
+          <description/>
+        </local>
+      </locals>
+      <remotes>
+        <remote uuid="9c9c17aa-ebe5-52fb-a36c-9dc29f96edc6">
+          <enabled>1</enabled>
+          <connection>24911d50-19e4-5d40-a3b8-6fed90b2b0bc</connection>
+          <round>0</round>
+          <auth>psk</auth>
+          <id>198.51.100.1</id>
+          <description/>
+        </remote>
+      </remotes>
+      <children>
+        <child uuid="1a9c91ea-89d9-5052-88c3-1acfc2a2e56f">
+          <enabled>1</enabled>
+          <connection>24911d50-19e4-5d40-a3b8-6fed90b2b0bc</connection>
+          <esp_proposals>default</esp_proposals>
+          <sha256_96>0</sha256_96>
+          <start_action>start</start_action>
+          <close_action>none</close_action>
+          <dpd_action>clear</dpd_action>
+          <mode>tunnel</mode>
+          <policies>1</policies>
+          <local_ts>192.168.1.0/24</local_ts>
+          <remote_ts>10.10.0.0/24</remote_ts>
+          <rekey_time>3600</rekey_time>
+          <description>LAN-to-LAN</description>
+        </child>
+      </children>
+      <Pools/>
+      <VTIs/>
+      <SPDs/>
+    </Swanctl>
+    <cron>
+      <jobs>
+        <job uuid="f80d536e-3ad3-5599-97ca-d30f8edfffe0">
+          <origin>cron</origin>
+          <enabled>1</enabled>
+          <minutes>0</minutes>
+          <hours>4</hours>
+          <days>*</days>
+          <months>*</months>
+          <weekdays>*</weekdays>
+          <who>root</who>
+          <command>firmware update</command>
+          <description>Daily firmware update check</description>
+        </job>
+      </jobs>
+    </cron>
+    <monit>
+      <general>
+        <enabled>1</enabled>
+        <interval>60</interval>
+        <startdelay>30</startdelay>
+        <mailserver>smtp.example.com</mailserver>
+        <port>587</port>
+        <username>monit@example.com</username>
+        <password>secret</password>
+        <ssl>1</ssl>
+        <sslversion>tlsv12</sslversion>
+        <sslverify>1</sslverify>
+        <logfile>syslog facility log_daemon</logfile>
+        <httpdEnabled>1</httpdEnabled>
+        <httpdUsername>admin</httpdUsername>
+        <httpdPassword>adminpass</httpdPassword>
+        <httpdPort>2812</httpdPort>
+        <httpdAllow>localhost,192.168.1.0/24</httpdAllow>
+        <mmonitTimeout>5</mmonitTimeout>
+        <mmonitRegisterCredentials>1</mmonitRegisterCredentials>
+      </general>
+      <alert uuid="bd6b5619-96ce-58aa-9796-13d78a45ce7e">
+        <enabled>1</enabled>
+        <recipient>admin@example.com</recipient>
+        <noton>0</noton>
+        <events>connection,timeout,nonexist</events>
+        <description>Admin alert</description>
+      </alert>
+      <test uuid="76fc0583-b70e-5b79-bc6b-21d868ee824c">
+        <name>CPU check</name>
+        <type>SystemResource</type>
+        <condition>cpu &gt; 80% for 5 cycles</condition>
+        <action>alert</action>
+      </test>
+      <test uuid="dd7abc0e-fa81-55d2-90b0-a669b4566b1d">
+        <name>Memory check</name>
+        <type>SystemResource</type>
+        <condition>memory usage &gt; 90%</condition>
+        <action>alert</action>
+      </test>
+      <test uuid="366d0862-25a7-57ed-a7e7-7b6158c2bded">
+        <name>Nginx connection</name>
+        <type>Connection</type>
+        <condition>failed port 80 protocol http</condition>
+        <action>restart</action>
+      </test>
+      <service uuid="06bc95d6-5374-5e49-976f-24a91865e615">
+        <enabled>1</enabled>
+        <name>system</name>
+        <description>System resource monitoring</description>
+        <type>system</type>
+        <timeout>300</timeout>
+        <starttimeout>30</starttimeout>
+        <tests>76fc0583-b70e-5b79-bc6b-21d868ee824c,dd7abc0e-fa81-55d2-90b0-a669b4566b1d</tests>
+      </service>
+      <service uuid="d1815681-eaed-50e4-af87-e948e0ce6576">
+        <enabled>1</enabled>
+        <name>nginx</name>
+        <description>Nginx web server</description>
+        <type>process</type>
+        <pidfile>/var/run/nginx.pid</pidfile>
+        <timeout>300</timeout>
+        <starttimeout>30</starttimeout>
+        <start>/usr/sbin/service nginx start</start>
+        <stop>/usr/sbin/service nginx stop</stop>
+        <tests>366d0862-25a7-57ed-a7e7-7b6158c2bded</tests>
+        <depends>06bc95d6-5374-5e49-976f-24a91865e615</depends>
+      </service>
+    </monit>
+    <TrafficShaper>
+      <pipes>
+        <pipe uuid="bae5e0ce-2a81-5df8-8fe2-01c81b4f32e9">
+          <number>1</number>
+          <enabled>1</enabled>
+          <bandwidth>100</bandwidth>
+          <bandwidthMetric>Mbit</bandwidthMetric>
+          <mask>none</mask>
+          <codel_enable>0</codel_enable>
+          <codel_ecn_enable>0</codel_ecn_enable>
+          <pie_enable>0</pie_enable>
+          <description>WAN Download</description>
+        </pipe>
+        <pipe uuid="753f9ed1-430a-56db-a179-b27da35c472e">
+          <number>2</number>
+          <enabled>1</enabled>
+          <bandwidth>20</bandwidth>
+          <bandwidthMetric>Mbit</bandwidthMetric>
+          <mask>none</mask>
+          <codel_enable>0</codel_enable>
+          <codel_ecn_enable>0</codel_ecn_enable>
+          <pie_enable>0</pie_enable>
+          <description>WAN Upload</description>
+        </pipe>
+      </pipes>
+      <queues>
+        <queue uuid="88b9721e-b1c6-58a3-8382-3361a7fff973">
+          <number>1</number>
+          <enabled>1</enabled>
+          <pipe>bae5e0ce-2a81-5df8-8fe2-01c81b4f32e9</pipe>
+          <weight>70</weight>
+          <mask>none</mask>
+          <codel_enable>0</codel_enable>
+          <codel_ecn_enable>0</codel_ecn_enable>
+          <pie_enable>0</pie_enable>
+          <description>WAN High Priority</description>
+        </queue>
+        <queue uuid="c2152092-a5ae-5d0d-8291-e871063d730f">
+          <number>2</number>
+          <enabled>1</enabled>
+          <pipe>bae5e0ce-2a81-5df8-8fe2-01c81b4f32e9</pipe>
+          <weight>30</weight>
+          <mask>none</mask>
+          <codel_enable>0</codel_enable>
+          <codel_ecn_enable>0</codel_ecn_enable>
+          <pie_enable>0</pie_enable>
+          <description>WAN Low Priority</description>
+        </queue>
+      </queues>
+      <rules>
+        <rule uuid="2ce06de5-2a45-59db-91d8-ccc292c8c33c">
+          <enabled>1</enabled>
+          <sequence>1</sequence>
+          <interface>wan</interface>
+          <proto>tcp</proto>
+          <source>any</source>
+          <source_not>0</source_not>
+          <src_port>any</src_port>
+          <destination>any</destination>
+          <destination_not>0</destination_not>
+          <dst_port>80,443</dst_port>
+          <direction>in</direction>
+          <target>88b9721e-b1c6-58a3-8382-3361a7fff973</target>
+          <description>Prioritize web traffic</description>
+        </rule>
+        <rule uuid="18db6c02-f51f-577e-9c1c-763db11f873f">
+          <enabled>1</enabled>
+          <sequence>100</sequence>
+          <interface>wan</interface>
+          <proto>ip</proto>
+          <source>any</source>
+          <source_not>0</source_not>
+          <src_port>any</src_port>
+          <destination>any</destination>
+          <destination_not>0</destination_not>
+          <dst_port>any</dst_port>
+          <target>bae5e0ce-2a81-5df8-8fe2-01c81b4f32e9</target>
+          <description>Default WAN Download shaping</description>
+        </rule>
+      </rules>
+    </TrafficShaper>
+    <radvd>
+      <entries uuid="60a0ec77-9e4a-5ba7-b3b4-4229185f7efe">
+        <enabled>1</enabled>
+        <interface>lan</interface>
+        <mode>stateless</mode>
+        <RDNSS>2001:db8::1</RDNSS>
+        <DNSSL>home.local</DNSSL>
+        <dns>1</dns>
+        <MinRtrAdvInterval>200</MinRtrAdvInterval>
+        <MaxRtrAdvInterval>600</MaxRtrAdvInterval>
+        <AdvLinkMTU>1500</AdvLinkMTU>
+        <AdvPreferredLifetime>14400</AdvPreferredLifetime>
+        <AdvValidLifetime>86400</AdvValidLifetime>
+        <AdvDefaultPreference>medium</AdvDefaultPreference>
+        <AdvCurHopLimit>64</AdvCurHopLimit>
+      </entries>
+    </radvd>
+    <Kea>
+      <dhcp4>
+        <general>
+          <enabled>1</enabled>
+          <interfaces>lan</interfaces>
+          <valid_lifetime>4000</valid_lifetime>
+          <fwrules>1</fwrules>
+        </general>
+        <subnets>
+          <subnet4 uuid="ff803696-ef09-54b5-8460-a6f8c9d384cb">
+            <subnet>192.168.1.0/24</subnet>
+            <option_data_autocollect>1</option_data_autocollect>
+            <pools>192.168.1.100-192.168.1.200</pools>
+            <option_data>
+              <routers>192.168.1.1</routers>
+              <domain_name_servers>8.8.8.8,8.8.4.4</domain_name_servers>
+              <domain_name>home.local</domain_name>
+            </option_data>
+          </subnet4>
+        </subnets>
+        <reservations>
+          <reservation uuid="3fd49326-8c50-5417-a574-8615bc4f6ecd">
+            <subnet>ff803696-ef09-54b5-8460-a6f8c9d384cb</subnet>
+            <hw_address>aa:bb:cc:dd:ee:ff</hw_address>
+            <ip_address>192.168.1.10</ip_address>
+            <hostname>printer</hostname>
+            <description>Office printer</description>
+          </reservation>
+        </reservations>
+      </dhcp4>
+      <dhcp6>
+        <general>
+          <enabled>0</enabled>
+          <interfaces/>
+          <valid_lifetime>4000</valid_lifetime>
+          <fwrules>1</fwrules>
+        </general>
+        <subnets/>
+        <reservations/>
+      </dhcp6>
+      <ctrl_agent>
+        <general>
+          <enabled>0</enabled>
+          <http_host>127.0.0.1</http_host>
+          <http_port>8000</http_port>
+        </general>
+      </ctrl_agent>
+      <ddns>
+        <general>
+          <enabled>0</enabled>
+          <server_ip>127.0.0.1</server_ip>
+          <server_port>53001</server_port>
+        </general>
+      </ddns>
+    </Kea>
+    <QemuGuestAgent>
+      <general>
+        <Enabled>1</Enabled>
+        <LogDebug>0</LogDebug>
+      </general>
+    </QemuGuestAgent>
+    <AcmeClient>
+      <settings>
+        <enabled>1</enabled>
+        <autoRenewal>1</autoRenewal>
+        <environment>prod</environment>
+        <challengePort>43580</challengePort>
+        <TLSchallengePort>43581</TLSchallengePort>
+        <restartTimeout>600</restartTimeout>
+        <logLevel>normal</logLevel>
+      </settings>
+      <accounts>
+        <account uuid="43decae1-03bf-52fe-993c-eaa002443ef9">
+          <enabled>1</enabled>
+          <name>letsencrypt</name>
+          <email>admin@example.com</email>
+          <ca>letsencrypt</ca>
+        </account>
+      </accounts>
+      <certificates>
+        <certificate uuid="59369e38-a236-57c2-bac8-098cd17c7696">
+          <enabled>1</enabled>
+          <name>example.com</name>
+          <altNames>www.example.com</altNames>
+          <account>43decae1-03bf-52fe-993c-eaa002443ef9</account>
+          <validationMethod>edb24825-56a8-5301-8393-5d6d2953127b</validationMethod>
+          <keyLength>key_4096</keyLength>
+          <ocsp>0</ocsp>
+          <autoRenewal>1</autoRenewal>
+          <renewInterval>60</renewInterval>
+          <aliasmode>none</aliasmode>
+        </certificate>
+      </certificates>
+      <validations>
+        <validation uuid="edb24825-56a8-5301-8393-5d6d2953127b">
+          <enabled>1</enabled>
+          <name>cloudflare-dns</name>
+          <method>dns01</method>
+          <dns_service>dns_cf</dns_service>
+          <dns_sleep>30</dns_sleep>
+          <dns_cf_token>mytoken123</dns_cf_token>
+        </validation>
+      </validations>
+      <actions>
+        <action uuid="2902bdce-3772-59f3-a383-58cd93e583ba">
+          <enabled>1</enabled>
+          <name>restart-gui</name>
+          <type>configd_restart_gui</type>
+        </action>
+      </actions>
+    </AcmeClient>
+    <bind>
+      <general>
+        <enabled>1</enabled>
+        <disablev6>0</disablev6>
+        <enablerpz>1</enablerpz>
+        <listenv4>0.0.0.0</listenv4>
+        <listenv6>::</listenv6>
+        <port>53530</port>
+        <forwarders>8.8.8.8,1.1.1.1</forwarders>
+        <filteraaaav4>0</filteraaaav4>
+        <filteraaaav6>0</filteraaaav6>
+        <logsize>5</logsize>
+        <general_log_level>info</general_log_level>
+        <maxcachesize>80</maxcachesize>
+        <recursion>c6c2b3bd-5f4d-5940-906b-bc55cadcfb59</recursion>
+        <dnssecvalidation>no</dnssecvalidation>
+        <hidehostname>0</hidehostname>
+        <hideversion>0</hideversion>
+        <disableprefetch>0</disableprefetch>
+        <enableratelimiting>0</enableratelimiting>
+        <ratelimitexcept>0.0.0.0,::</ratelimitexcept>
+        <rndcalgo>hmac-sha256</rndcalgo>
+        <rndcsecret>VxtIzJevSQXqnr7h2qerrcwjnZlMWSGGFBndKeNIDfw=</rndcsecret>
+      </general>
+      <acl>
+        <acls>
+          <acl uuid="c6c2b3bd-5f4d-5940-906b-bc55cadcfb59">
+            <enabled>1</enabled>
+            <name>local_nets</name>
+            <networks>192.168.0.0/24,10.0.0.0/8</networks>
+          </acl>
+        </acls>
+      </acl>
+      <domain>
+        <domains>
+          <domain uuid="5a95f08c-5e01-58df-a12c-661953670233">
+            <enabled>1</enabled>
+            <type>primary</type>
+            <domainname>home.local</domainname>
+            <allowrndctransfer>0</allowrndctransfer>
+            <allowquery>c6c2b3bd-5f4d-5940-906b-bc55cadcfb59</allowquery>
+            <allowrndcupdate>1</allowrndcupdate>
+            <ttl>86400</ttl>
+            <refresh>21600</refresh>
+            <retry>3600</retry>
+            <expire>3542400</expire>
+            <negative>3600</negative>
+            <mailadmin>mail.opnsense.localdomain</mailadmin>
+            <dnsserver>opnsense.localdomain</dnsserver>
+          </domain>
+        </domains>
+      </domain>
+      <record>
+        <records>
+          <record uuid="5dfd6746-c8bf-511c-aa7e-187cee1550d4">
+            <enabled>1</enabled>
+            <domain>5a95f08c-5e01-58df-a12c-661953670233</domain>
+            <name>router</name>
+            <type>A</type>
+            <value>192.168.0.1</value>
+          </record>
+          <record uuid="ee29f0e1-4b4c-5d69-bc31-736e1e53431c">
+            <enabled>1</enabled>
+            <domain>5a95f08c-5e01-58df-a12c-661953670233</domain>
+            <name>nas</name>
+            <type>A</type>
+            <value>192.168.0.10</value>
+          </record>
+        </records>
+      </record>
+      <dnsbl>
+        <enabled>0</enabled>
+        <forcesafegoogle>0</forcesafegoogle>
+        <forcesafeduckduckgo>0</forcesafeduckduckgo>
+        <forcesafeyoutube>0</forcesafeyoutube>
+        <forcestrictbing>0</forcestrictbing>
+      </dnsbl>
+    </bind>
+    <chrony>
+      <general>
+        <enabled>1</enabled>
+        <port>323</port>
+        <ntsclient>0</ntsclient>
+        <ntsnocert>0</ntsnocert>
+        <peers>0.opnsense.pool.ntp.org,1.opnsense.pool.ntp.org,2.opnsense.pool.ntp.org,3.opnsense.pool.ntp.org</peers>
+        <allowednetworks>192.168.1.0/24</allowednetworks>
+      </general>
+    </chrony>
+    <Syslog>
+      <general>
+        <enabled>1</enabled>
+        <loglocal>1</loglocal>
+        <maxpreserve>31</maxpreserve>
+      </general>
+      <destinations>
+        <destination uuid="c660f7f5-573e-55aa-b8cb-2e320be1e364">
+          <enabled>1</enabled>
+          <transport>udp4</transport>
+          <hostname>syslog.example.com</hostname>
+          <port>514</port>
+          <rfc5424>0</rfc5424>
+          <description>Remote syslog</description>
+        </destination>
+      </destinations>
+    </Syslog>
+  </OPNsense>
+  <revision>
+    <username>opnsense-config-generator</username>
+    <time>TIMESTAMP</time>
+    <description>Imported by opnsense-config-generator v0.0.3 (OPNsense 26.1.6)</description>
+  </revision>
+</opnsense>

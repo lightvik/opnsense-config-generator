@@ -1,0 +1,546 @@
+system:
+  hostname: fw01
+  domain: home.local
+  timezone: Europe/Moscow
+  dnsserver:
+    - 8.8.8.8
+    - 8.8.4.4
+  users:
+    - name: root
+      password: "opnsense"
+      descr: System Administrator
+      scope: system
+      groupname: admins
+      uid: 0
+      shell: /bin/sh
+  groups:
+    - name: admins
+      description: System Administrators
+      scope: system
+      gid: 1999
+      members: [0]
+      priv: [page-all]
+  webgui:
+    protocol: https
+  ssh:
+    enabled: true
+    group: admins
+
+interfaces:
+  interfaces:
+    wan:
+      if: vtnet0
+      ipaddr: dhcp
+      ipaddrv6: dhcp6
+      blockpriv: true
+      blockbogons: true
+      dhcp6-ia-pd-len: 0
+    lan:
+      if: vtnet1
+      ipaddr: 192.168.1.1
+      subnet: "24"
+      ipaddrv6: idassoc6
+      subnetv6: "64"
+      track6-interface: wan
+      track6-prefix-id: 0
+    opt1:
+      if: vtnet2
+      descr: DMZ
+      ipaddr: 10.0.0.1
+      subnet: "24"
+
+vlans:
+  vlans:
+    - if: vtnet0
+      tag: 100
+      pcp: 0
+      descr: "VLAN 100"
+      vlanif: vtnet0.100
+    - if: vtnet0
+      tag: 200
+      pcp: 0
+      descr: "VLAN 200"
+      vlanif: vtnet0.200
+
+bridges:
+  bridges:
+    - bridgeif: bridge0
+      members: [vtnet2, vtnet3]
+      descr: "LAN bridge"
+      stp: false
+      rstp: false
+      maxaddr: 100
+      timeout: 240
+
+laggs:
+  laggs:
+    - laggif: lagg0
+      proto: lacp
+      members: [igb0, igb1]
+      laggport: [igb0, igb1]
+      descr: "LACP uplink"
+
+gateways:
+  gateways:
+    - name: GW_WAN
+      interface: wan
+      gateway: 203.0.113.1
+      ipprotocol: inet
+      descr: "WAN Gateway"
+      defaultgw: true
+    - name: GW_WAN6
+      interface: wan
+      gateway: "2001:db8::1"
+      ipprotocol: inet6
+      descr: "WAN IPv6 Gateway"
+      defaultgw: true
+
+staticroutes:
+  routes:
+    - network: 10.0.0.0/8
+      gateway: GW_WAN
+      descr: "Office network"
+    - network: 172.16.0.0/12
+      gateway: 192.168.1.254
+      descr: "Partner network"
+
+aliases:
+  aliases:
+    - name: RFC1918
+      type: network
+      descr: "Private networks"
+      content:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+      enabled: true
+    - name: DNS_PORTS
+      type: port
+      content: ["53", "853"]
+    - name: ADMIN_HOSTS
+      type: host
+      descr: "Management workstations"
+      content:
+        - 192.168.1.10
+        - 192.168.1.11
+
+certs:
+  ca:
+    - descr: "My CA"
+      crt: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJwekNDQVUyZ0F3SUJBZ0lVQUxmQ0lrZz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+      prv: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR0hBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJHMHdhd0lCQVFRZz0KLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLQo="
+      serial: 1
+  cert:
+    - descr: "VPN Server Cert"
+      caref: "deadbeef"
+      crt: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJwekNDQVUyZ0F3SUJBZ0lVQUxmQ0lrZz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+      prv: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR0hBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJHMHdhd0lCQVFRZz0KLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLQo="
+
+filter:
+  rules:
+    - type: pass
+      ipprotocol: inet
+      interface: lan
+      descr: Default allow LAN to any rule
+      source:
+        network: lan
+      destination:
+        any: true
+    - type: pass
+      ipprotocol: inet6
+      interface: lan
+      descr: Default allow LAN IPv6 to any rule
+      source:
+        network: lan
+      destination:
+        any: true
+    - type: block
+      ipprotocol: inet
+      interface: lan
+      descr: Block RFC1918 from DMZ
+      source:
+        network: opt1
+      destination:
+        address: RFC1918
+      log: true
+
+nat:
+  outbound_mode: hybrid
+  outbound_rules:
+    - interface: wan
+      source:
+        network: 192.168.1.0/24
+      destination:
+        any: true
+      target: ""
+      targetip_subnet: 0
+      descr: "LAN outbound NAT"
+  port_forwards:
+    - interface: wan
+      protocol: tcp
+      source:
+        any: true
+      destination:
+        address: 203.0.113.1
+        port: "8080"
+      target: 192.168.1.10
+      local-port: "80"
+      descr: HTTP redirect to web server
+
+unbound:
+  enable: true
+  dnssec: true
+  hosts:
+    - host: nas
+      domain: home.local
+      ip: 192.168.1.20
+      descr: "NAS storage"
+  domainoverrides:
+    - domain: corp.example.com
+      ip: 10.0.0.53
+      descr: "Corporate DNS"
+
+dnsmasq:
+  enable: true
+  port: "53053"
+  interface: lan
+  dhcp:
+    enable_ra: true
+  dhcp_ranges:
+    - interface: lan
+      start_addr: 192.168.1.100
+      end_addr: 192.168.1.199
+    - interface: lan
+      start_addr: "::1000"
+      end_addr: "::2000"
+      constructor: lan
+      ra_mode: slaac
+
+ntpd:
+  servers:
+    - address: 0.opnsense.pool.ntp.org
+      pool: true
+      prefer: true
+    - address: 1.opnsense.pool.ntp.org
+      pool: true
+    - address: 2.opnsense.pool.ntp.org
+      pool: true
+
+wireguard:
+  enabled: true
+  servers:
+    - name: wg0
+      privkey: "cHJpdmF0ZWtleWhlcmUxMjM0NTY3ODkwYWJjZGVmZ2g="
+      pubkey: "cHVibGlja2V5aGVyZTEyMzQ1Njc4OTBhYmNkZWZnaA=="
+      port: "51820"
+      tunneladdress:
+        - "10.0.0.1/24"
+      peers:
+        - peer1
+  clients:
+    - name: peer1
+      pubkey: "cGVlcnB1YmtleWhlcmUxMjM0NTY3ODkwYWJjZGVm"
+      tunneladdress:
+        - "10.0.0.2/32"
+      serveraddress: "vpn.example.com"
+      serverport: "51820"
+      keepalive: 25
+
+openvpn:
+  instances:
+    - description: "Road Warrior VPN"
+      role: server
+      dev_type: tun
+      proto: udp
+      port: "1194"
+      server: "10.8.0.0/24"
+      topology: subnet
+      ca: "My CA"
+      cert: "VPN Server Cert"
+      verify_client_cert: require
+      auth: "SHA256"
+      data_ciphers:
+        - AES-256-GCM
+        - AES-128-GCM
+        - CHACHA20-POLY1305
+      data_ciphers_fallback: "AES-256-CBC"
+      push_route:
+        - "192.168.1.0/24"
+      dns_servers:
+        - 192.168.1.1
+      keepalive_interval: 10
+      keepalive_timeout: 60
+      verb: "3"
+
+ipsec:
+  connections:
+    - description: "Site-to-Site VPN"
+      version: "2"
+      local_addrs: "203.0.113.1"
+      remote_addrs: "198.51.100.1"
+      proposals: "default"
+      unique: "no"
+      mobike: true
+  locals:
+    - connection: "Site-to-Site VPN"
+      auth: psk
+      id: "203.0.113.1"
+  remotes:
+    - connection: "Site-to-Site VPN"
+      auth: psk
+      id: "198.51.100.1"
+  children:
+    - connection: "Site-to-Site VPN"
+      description: "LAN-to-LAN"
+      local_ts:
+        - "192.168.1.0/24"
+      remote_ts:
+        - "10.10.0.0/24"
+      esp_proposals: "default"
+      mode: tunnel
+      start_action: start
+      close_action: none
+      dpd_action: clear
+      rekey_time: 3600
+
+syslog:
+  general:
+    enabled: true
+    loglocal: true
+    maxpreserve: 31
+  destinations:
+    - enabled: true
+      transport: udp4
+      hostname: syslog.example.com
+      port: 514
+      rfc5424: false
+      description: "Remote syslog"
+
+cron:
+  jobs:
+    - origin: cron
+      enabled: true
+      minutes: "0"
+      hours: "4"
+      days: "*"
+      months: "*"
+      weekdays: "*"
+      who: root
+      command: "firmware update"
+      description: "Daily firmware update check"
+
+monit:
+  general:
+    enabled: true
+    interval: 60
+    startdelay: 30
+    mailserver: "smtp.example.com"
+    port: 587
+    username: "monit@example.com"
+    password: "secret"
+    ssl: true
+    sslversion: tlsv12
+    logfile: syslog facility log_daemon
+    httpd_enabled: true
+    httpd_username: admin
+    httpd_password: "adminpass"
+    httpd_port: 2812
+    httpd_allow:
+      - localhost
+      - 192.168.1.0/24
+  alerts:
+    - enabled: true
+      recipient: "admin@example.com"
+      noton: false
+      events:
+        - connection
+        - timeout
+        - nonexist
+      description: "Admin alert"
+  tests:
+    - name: "CPU check"
+      type: SystemResource
+      condition: "cpu > 80% for 5 cycles"
+      action: alert
+    - name: "Memory check"
+      type: SystemResource
+      condition: "memory usage > 90%"
+      action: alert
+    - name: "Nginx connection"
+      type: Connection
+      condition: "failed port 80 protocol http"
+      action: restart
+  services:
+    - enabled: true
+      name: "system"
+      type: system
+      tests:
+        - "CPU check"
+        - "Memory check"
+      description: "System resource monitoring"
+    - enabled: true
+      name: "nginx"
+      type: process
+      pidfile: "/var/run/nginx.pid"
+      start: "/usr/sbin/service nginx start"
+      stop: "/usr/sbin/service nginx stop"
+      tests:
+        - "Nginx connection"
+      depends:
+        - "system"
+      description: "Nginx web server"
+
+trafficshaper:
+  pipes:
+    - number: 1
+      description: "WAN Download"
+      bandwidth: 100
+      bandwidth_metric: Mbit
+      mask: none
+    - number: 2
+      description: "WAN Upload"
+      bandwidth: 20
+      bandwidth_metric: Mbit
+      mask: none
+  queues:
+    - number: 1
+      description: "WAN High Priority"
+      pipe: "WAN Download"
+      weight: 70
+    - number: 2
+      description: "WAN Low Priority"
+      pipe: "WAN Download"
+      weight: 30
+  rules:
+    - sequence: 1
+      interface: wan
+      proto: tcp
+      source: any
+      destination: any
+      dst_port: "80,443"
+      direction: in
+      target_queue: "WAN High Priority"
+      description: "Prioritize web traffic"
+    - sequence: 100
+      interface: wan
+      proto: ip
+      source: any
+      destination: any
+      target_pipe: "WAN Download"
+      description: "Default WAN Download shaping"
+
+radvd:
+  entries:
+    - interface: lan
+      mode: stateless
+      rdnss:
+        - "2001:db8::1"
+      dnssl:
+        - "home.local"
+      adv_link_mtu: 1500
+      adv_valid_lifetime: 86400
+      adv_preferred_lifetime: 14400
+
+kea:
+  dhcp4:
+    enabled: true
+    interfaces:
+      - lan
+    valid_lifetime: 4000
+    subnets:
+      - subnet: "192.168.1.0/24"
+        pools:
+          - "192.168.1.100-192.168.1.200"
+        option_data:
+          routers: "192.168.1.1"
+          domain_name_servers:
+            - 8.8.8.8
+            - 8.8.4.4
+          domain_name: "home.local"
+    reservations:
+      - subnet: "192.168.1.0/24"
+        hw_address: "aa:bb:cc:dd:ee:ff"
+        ip_address: "192.168.1.10"
+        hostname: "printer"
+        description: "Office printer"
+
+qemu_guest_agent:
+  enabled: true
+
+acme_client:
+  settings:
+    enabled: true
+    environment: prod
+    log_level: normal
+  accounts:
+    - name: letsencrypt
+      email: admin@example.com
+      ca: letsencrypt
+  validations:
+    - name: cloudflare-dns
+      method: dns01
+      dns_service: dns_cf
+      dns_sleep: 30
+      dns_credentials:
+        dns_cf_token: "mytoken123"
+  certificates:
+    - name: example.com
+      account: letsencrypt
+      validation_method: cloudflare-dns
+      alt_names:
+        - www.example.com
+      key_length: key_4096
+      auto_renewal: true
+      renew_interval: 60
+  actions:
+    - name: restart-gui
+      type: configd_restart_gui
+
+bind:
+  general:
+    enabled: true
+    port: 53530
+    forwarders:
+      - 8.8.8.8
+      - 1.1.1.1
+    dnssecvalidation: "no"
+    rndcsecret: "VxtIzJevSQXqnr7h2qerrcwjnZlMWSGGFBndKeNIDfw="
+    recursion:
+      - local_nets
+  acls:
+    - name: local_nets
+      networks:
+        - 192.168.0.0/24
+        - 10.0.0.0/8
+  domains:
+    - domainname: home.local
+      type: primary
+      ttl: 86400
+      allowquery:
+        - local_nets
+  records:
+    - domain: home.local
+      name: router
+      type: A
+      value: 192.168.0.1
+    - domain: home.local
+      name: nas
+      type: A
+      value: 192.168.0.10
+
+chrony:
+  general:
+    enabled: true
+    peers:
+      - 0.opnsense.pool.ntp.org
+      - 1.opnsense.pool.ntp.org
+      - 2.opnsense.pool.ntp.org
+      - 3.opnsense.pool.ntp.org
+    allowed_networks:
+      - 192.168.1.0/24
+
+git_backup:
+  enabled: true
+  url: "ssh://git@github.com/user/opnsense-backup.git"
+  branch: main
+  user: git-backup
