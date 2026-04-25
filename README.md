@@ -9,7 +9,7 @@
 
 Тег релиза содержит обе версии: `opnsense-{OPNSENSE_VERSION}_v{TOOL_VERSION}`.
 
-Текущий тег: `opnsense-26.1.6_v0.0.1`
+Текущий тег: `opnsense-26.1.6_v0.0.2`
 
 - При обновлении до новой версии OPNsense — обновляется `OPNSENSE_VERSION` в `version.py` и создаётся новый тег.
 - При изменениях только в инструменте — инкрементируется `TOOL_VERSION`, `OPNSENSE_VERSION` не меняется.
@@ -30,16 +30,22 @@ config.yaml.j2  →  (Jinja2 render)  →  build/config.yaml  →  (XML builder)
 ### Docker (рекомендуется)
 
 ```bash
-docker run --rm --volume "$(pwd):/work" opnsense-config-generator
+docker run --rm --volume "$(pwd):/work" ghcr.io/lightvik/opnsense-config-generator
 ```
 
 С явными путями:
 
 ```bash
-docker run --rm --volume "$(pwd):/work" opnsense-config-generator render \
+docker run --rm --volume "$(pwd):/work" ghcr.io/lightvik/opnsense-config-generator render \
     --template config.yaml.j2 \
     --intermediate build/config.yaml \
     --output build/config.xml
+```
+
+Конкретная версия:
+
+```bash
+docker run --rm --volume "$(pwd):/work" ghcr.io/lightvik/opnsense-config-generator:opnsense-26.1.6_v0.0.2
 ```
 
 ### Локально
