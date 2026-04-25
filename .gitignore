@@ -20,3 +20,4 @@ venv/
 .env
 secrets.yaml
 context/
+config.yaml.j2
