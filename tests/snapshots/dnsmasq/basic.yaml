@@ -1,0 +1,14 @@
+enable: true
+port: "53053"
+interface: lan
+dhcp:
+  enable_ra: true
+dhcp_ranges:
+  - interface: lan
+    start_addr: 192.168.1.100
+    end_addr: 192.168.1.199
+  - interface: lan
+    start_addr: "::1000"
+    end_addr: "::2000"
+    constructor: lan
+    ra_mode: slaac

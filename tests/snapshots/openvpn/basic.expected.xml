@@ -1,0 +1,27 @@
+<OpenVPN>
+  <Instances>
+    <Instance uuid="142fda46-a698-5aff-985c-b21f1843ed6c">
+      <vpnid>1</vpnid>
+      <enabled>1</enabled>
+      <dev_type>tun</dev_type>
+      <verb>3</verb>
+      <proto>udp</proto>
+      <port>1194</port>
+      <topology>subnet</topology>
+      <role>server</role>
+      <server>10.8.0.0/24</server>
+      <ca>abcd1234</ca>
+      <cert>efgh5678</cert>
+      <remote_cert_tls>0</remote_cert_tls>
+      <verify_client_cert>require</verify_client_cert>
+      <data-ciphers>AES-256-GCM,AES-128-GCM</data-ciphers>
+      <push_route>192.168.1.0/24</push_route>
+      <keepalive_interval>10</keepalive_interval>
+      <keepalive_timeout>120</keepalive_timeout>
+      <username_as_common_name>0</username_as_common_name>
+      <description>VPN Server</description>
+    </Instance>
+  </Instances>
+  <StaticKeys/>
+  <Overwrites/>
+</OpenVPN>

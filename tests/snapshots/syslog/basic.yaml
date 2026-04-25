@@ -1,0 +1,11 @@
+general:
+  enabled: true
+  loglocal: true
+  maxpreserve: 31
+destinations:
+  - enabled: true
+    transport: udp4
+    hostname: syslog.example.com
+    port: 514
+    rfc5424: false
+    description: "Remote syslog server"

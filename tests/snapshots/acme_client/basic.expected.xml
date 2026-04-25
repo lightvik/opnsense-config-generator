@@ -1,0 +1,50 @@
+<AcmeClient>
+  <settings>
+    <enabled>1</enabled>
+    <autoRenewal>1</autoRenewal>
+    <environment>prod</environment>
+    <challengePort>43580</challengePort>
+    <TLSchallengePort>43581</TLSchallengePort>
+    <restartTimeout>600</restartTimeout>
+    <logLevel>normal</logLevel>
+  </settings>
+  <accounts>
+    <account uuid="43decae1-03bf-52fe-993c-eaa002443ef9">
+      <enabled>1</enabled>
+      <name>letsencrypt</name>
+      <email>admin@example.com</email>
+      <ca>letsencrypt</ca>
+    </account>
+  </accounts>
+  <certificates>
+    <certificate uuid="59369e38-a236-57c2-bac8-098cd17c7696">
+      <enabled>1</enabled>
+      <name>example.com</name>
+      <altNames>www.example.com,mail.example.com</altNames>
+      <account>43decae1-03bf-52fe-993c-eaa002443ef9</account>
+      <validationMethod>edb24825-56a8-5301-8393-5d6d2953127b</validationMethod>
+      <keyLength>key_4096</keyLength>
+      <ocsp>0</ocsp>
+      <autoRenewal>1</autoRenewal>
+      <renewInterval>60</renewInterval>
+      <aliasmode>none</aliasmode>
+    </certificate>
+  </certificates>
+  <validations>
+    <validation uuid="edb24825-56a8-5301-8393-5d6d2953127b">
+      <enabled>1</enabled>
+      <name>cloudflare-dns</name>
+      <method>dns01</method>
+      <dns_service>dns_cf</dns_service>
+      <dns_sleep>30</dns_sleep>
+      <dns_cf_token>mytoken123</dns_cf_token>
+    </validation>
+  </validations>
+  <actions>
+    <action uuid="2902bdce-3772-59f3-a383-58cd93e583ba">
+      <enabled>1</enabled>
+      <name>restart-gui</name>
+      <type>configd_restart_gui</type>
+    </action>
+  </actions>
+</AcmeClient>

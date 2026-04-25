@@ -1,0 +1,142 @@
+system:
+  hostname: fw01
+  domain: home.local
+  timezone: Europe/Moscow
+  dnsserver:
+    - 8.8.8.8
+    - 8.8.4.4
+  users:
+    - name: root
+      password: "opnsense"
+      descr: System Administrator
+      scope: system
+      groupname: admins
+      uid: 0
+      shell: /bin/sh
+  groups:
+    - name: admins
+      description: System Administrators
+      scope: system
+      gid: 1999
+      members: [0]
+      priv: [page-all]
+  webgui:
+    protocol: https
+  ssh:
+    enabled: true
+    group: admins
+
+interfaces:
+  interfaces:
+    wan:
+      if: vtnet0
+      ipaddr: dhcp
+      ipaddrv6: dhcp6
+      blockpriv: true
+      blockbogons: true
+      dhcp6-ia-pd-len: 0
+    lan:
+      if: vtnet1
+      ipaddr: 192.168.1.1
+      subnet: "24"
+      ipaddrv6: idassoc6
+      subnetv6: "64"
+      track6-interface: wan
+      track6-prefix-id: 0
+
+certs:
+  ca:
+    - descr: "My CA"
+      crt: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJwekNDQVUyZ0F3SUJBZ0lVQUxmQ0lrZz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+      prv: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR0hBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJHMHdhd0lCQVFRZz0KLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLQo="
+      serial: 1
+  cert:
+    - descr: "VPN Server Cert"
+      caref: "deadbeef"
+      crt: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJwekNDQVUyZ0F3SUJBZ0lVQUxmQ0lrZz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+      prv: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR0hBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJHMHdhd0lCQVFRZz0KLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLQo="
+
+ntpd:
+  servers:
+    - address: 0.opnsense.pool.ntp.org
+      pool: true
+      prefer: true
+    - address: 1.opnsense.pool.ntp.org
+      pool: true
+    - address: 2.opnsense.pool.ntp.org
+      pool: true
+
+wireguard:
+  enabled: true
+  servers:
+    - name: wg0
+      privkey: "cHJpdmF0ZWtleWhlcmUxMjM0NTY3ODkwYWJjZGVmZ2g="
+      pubkey: "cHVibGlja2V5aGVyZTEyMzQ1Njc4OTBhYmNkZWZnaA=="
+      port: "51820"
+      tunneladdress:
+        - "10.0.0.1/24"
+      peers:
+        - peer1
+  clients:
+    - name: peer1
+      pubkey: "cGVlcnB1YmtleWhlcmUxMjM0NTY3ODkwYWJjZGVm"
+      tunneladdress:
+        - "10.0.0.2/32"
+      serveraddress: "vpn.example.com"
+      serverport: "51820"
+      keepalive: 25
+
+syslog:
+  general:
+    enabled: true
+    loglocal: true
+    maxpreserve: 31
+  destinations:
+    - enabled: true
+      transport: udp4
+      hostname: syslog.example.com
+      port: 514
+      rfc5424: false
+      description: "Remote syslog"
+
+unbound:
+  enable: true
+  dnssec: true
+
+nat:
+  outbound_mode: automatic
+
+filter:
+  rules:
+    - type: pass
+      ipprotocol: inet
+      interface: lan
+      descr: Default allow LAN to any rule
+      source:
+        network: lan
+      destination:
+        any: true
+    - type: pass
+      ipprotocol: inet6
+      interface: lan
+      descr: Default allow LAN IPv6 to any rule
+      source:
+        network: lan
+      destination:
+        any: true
+
+dnsmasq:
+  enable: true
+  port: "53053"
+  interface: lan
+  dhcp:
+    enable_ra: true
+  dhcp_ranges:
+    - interface: lan
+      start_addr: 192.168.1.100
+      end_addr: 192.168.1.199
+    - interface: lan
+      start_addr: "::1000"
+      end_addr: "::2000"
+      constructor: lan
+      ra_mode: slaac

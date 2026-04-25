@@ -1,0 +1,6 @@
+enabled: true
+log_debug: true
+disabled_rpcs:
+  - guest-exec
+  - guest-exec-status
+  - guest-file-open

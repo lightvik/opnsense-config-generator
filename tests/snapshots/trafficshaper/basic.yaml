@@ -1,0 +1,42 @@
+pipes:
+  - number: 1
+    description: "WAN Download"
+    bandwidth: 100
+    bandwidth_metric: Mbit
+    mask: none
+
+  - number: 2
+    description: "WAN Upload"
+    bandwidth: 20
+    bandwidth_metric: Mbit
+    mask: none
+
+queues:
+  - number: 1
+    description: "WAN High Priority"
+    pipe: "WAN Download"
+    weight: 70
+
+  - number: 2
+    description: "WAN Low Priority"
+    pipe: "WAN Download"
+    weight: 30
+
+rules:
+  - sequence: 1
+    interface: wan
+    proto: tcp
+    source: any
+    destination: any
+    dst_port: "80,443"
+    direction: in
+    target_queue: "WAN High Priority"
+    description: "Prioritize web traffic"
+
+  - sequence: 100
+    interface: wan
+    proto: ip
+    source: any
+    destination: any
+    target_pipe: "WAN Download"
+    description: "Default WAN shaping"

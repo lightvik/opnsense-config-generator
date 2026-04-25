@@ -1,0 +1,269 @@
+{# =============================================================================
+   opnsense-config-generator — docs/minimal_config.yaml.j2
+   Документированный минимальный шаблон конфигурации OPNsense.
+   Содержит только обязательные секции: system, interfaces, filter, nat,
+   dhcpd, unbound — каждая с полным описанием всех параметров.
+
+   Это справочный файл. Рабочий шаблон для редактирования — config.yaml.j2
+   в корне проекта. Полный справочник со всеми секциями — docs/full_config.yaml.j2.
+
+   JINJA2 ВОЗМОЖНОСТИ
+   ------------------
+   • env — словарь переменных окружения:
+         hostname: {{ env.MY_HOSTNAME }}
+         hostname: {{ env.get('MY_HOSTNAME', 'fw01') }}
+   • load_yaml('path.yaml') — загрузить внешний YAML (для secrets и т.д.):
+         {% set secrets = load_yaml('/etc/opnsense-secrets.yaml') %}
+         password: {{ secrets.admin_password }}
+   • Полный синтаксис Jinja2: условия ({% if %} / {% endif %}),
+     циклы ({% for %} / {% endfor %}), фильтры ({{ val | default('x') }}).
+
+   СТРУКТУРА ФАЙЛА
+   ---------------
+   • Обязательные поля — без комментария.
+   • Опциональные поля — закомментированы с примерами и пояснениями.
+   • Значения по умолчанию показаны в комментарии после поля.
+   ============================================================================= #}
+
+# ==============================================================================
+# SYSTEM
+# ==============================================================================
+system:
+  hostname: OPNsense                # имя хоста (без домена)
+  domain: internal                  # домен
+
+  # DNS-серверы (добавляются в /etc/resolv.conf и forwarding unbound)
+  dnsserver:
+    - 8.8.8.8
+    - 8.8.4.4
+
+  # Разрешить провайдеру переопределять DNS через DHCP (1 = да)
+  # dnsallowoverride: true
+
+  timezone: Etc/UTC                 # TZ-database name (Europe/Moscow, UTC, …)
+
+  # NTP-серверы (строка, через пробел, или список строк)
+  # timeservers: "0.opnsense.pool.ntp.org 1.opnsense.pool.ntp.org"
+
+  # Оптимизация pf: normal | high-latency | aggressive | conservative
+  # optimization: normal
+
+  # -----------------------------------------------------------------------
+  # WEB GUI
+  # -----------------------------------------------------------------------
+  webgui:
+    protocol: https                 # http | https
+    # port: ""                      # пустая строка = 443/80 по умолчанию
+    # interfaces: ""                # пустая строка = все интерфейсы
+    # nohttpreferercheck: false     # отключить проверку HTTP Referer
+    # loginautocomplete: false      # разрешить автозаполнение формы входа
+    # ssl_certref: ""               # uuid сертификата из секции certs
+
+  # -----------------------------------------------------------------------
+  # SSH
+  # -----------------------------------------------------------------------
+  ssh:
+    enabled: false                  # true = включить SSH-демон
+    group: admins                   # группа, которой разрешён SSH-доступ
+    # permitrootlogin: false        # разрешить root login по SSH
+    # passwordauth: true            # разрешить аутентификацию по паролю
+
+  # -----------------------------------------------------------------------
+  # ПОЛЬЗОВАТЕЛИ
+  # Пароль указывается plaintext — в XML пишется bcrypt-хэш.
+  # Если пароль уже хэширован ($2b$...) — используется как есть.
+  # -----------------------------------------------------------------------
+  users:
+    - name: root
+      password: "opnsense"          # ЗАМЕНИТЕ на свой пароль
+      descr: System Administrator
+      scope: system                 # system | user
+      groupname: admins
+      uid: 0
+      shell: /bin/sh
+      # expires: ""                 # дата истечения: MM/DD/YYYY или пусто
+
+  # -----------------------------------------------------------------------
+  # ГРУППЫ
+  # -----------------------------------------------------------------------
+  groups:
+    - name: admins
+      description: System Administrators
+      scope: system                 # system | group
+      gid: 1999
+      members: [0]                  # список uid пользователей
+      priv: [page-all]              # привилегии (page-all = полный доступ)
+
+  # Misc настройки (обычно менять не нужно)
+  # disablenatreflection: "yes"     # yes | no
+  # usevirtualterminal: true
+  # disableconsolemenu: false
+  # ipv6allow: true
+  # pf_share_forward: true
+  # lb_use_sticky: true
+
+# ==============================================================================
+# INTERFACES
+# Ключ = имя назначения интерфейса: wan, lan, opt1, opt2, …
+# ==============================================================================
+interfaces:
+  interfaces:
+    wan:
+      if: vtnet0                    # физический интерфейс (vtnet0, em0, igb0, …)
+      ipaddr: dhcp                  # dhcp | статический IP | pppoe
+      ipaddrv6: dhcp6               # dhcp6 | slaac | статический IPv6 | ""
+      blockpriv: true               # блокировать RFC1918 с WAN
+      blockbogons: true             # блокировать bogons с WAN
+      # mtu: ""                     # MTU, пусто = авто
+      # media: ""                   # скорость/дуплекс (autoselect, 1000baseT…)
+      # mediaopt: ""
+      # dhcphostname: ""            # имя хоста для DHCP-запроса
+      # spoofmac: ""                # подменить MAC
+      # dhcp6-ia-pd-len: 0          # длина prefix delegation (0-32)
+
+    lan:
+      if: vtnet1
+      ipaddr: 192.168.1.1
+      subnet: "24"                  # длина маски (без слэша)
+      ipaddrv6: idassoc6            # idassoc6 = использовать delegated prefix от WAN
+      subnetv6: "64"
+      track6-interface: wan         # WAN-интерфейс с prefix delegation
+      track6-prefix-id: 0
+
+    # Пример OPT-интерфейса со статическим IP:
+    # opt1:
+    #   if: vtnet2
+    #   descr: DMZ
+    #   ipaddr: 10.0.0.1
+    #   subnet: "24"
+
+# ==============================================================================
+# FIREWALL RULES
+# ==============================================================================
+filter:
+  rules:
+    # Разрешить весь трафик с LAN наружу (IPv4)
+    - type: pass
+      ipprotocol: inet
+      interface: lan
+      descr: Default allow LAN to any rule
+      source:
+        network: lan               # lan | wan | opt1 | IP/маска | имя алиаса
+      destination:
+        any: true
+
+    # Разрешить весь трафик с LAN наружу (IPv6)
+    - type: pass
+      ipprotocol: inet6
+      interface: lan
+      descr: Default allow LAN IPv6 to any rule
+      source:
+        network: lan
+      destination:
+        any: true
+
+    # Пример блокирующего правила:
+    # - type: block
+    #   ipprotocol: inet
+    #   interface: lan
+    #   descr: Block social media
+    #   protocol: tcp
+    #   source:
+    #     network: lan
+    #   destination:
+    #     address: 157.240.0.0/16
+    #     port: "443"
+    #   log: true
+
+    # Пример входящего правила на WAN:
+    # - type: pass
+    #   ipprotocol: inet
+    #   interface: wan
+    #   direction: in
+    #   protocol: tcp
+    #   descr: Allow HTTPS from internet
+    #   source:
+    #     any: true
+    #   destination:
+    #     address: 203.0.113.1
+    #     port: "443"
+
+# ==============================================================================
+# NAT
+# ==============================================================================
+nat:
+  outbound_mode: automatic          # automatic | hybrid | advanced | disabled
+
+  # Port forwarding (DNAT):
+  # port_forwards:
+  #   - interface: wan
+  #     protocol: tcp
+  #     source:
+  #       any: true
+  #     destination:
+  #       address: 203.0.113.1      # внешний IP WAN
+  #       port: "8080"
+  #     target: 192.168.1.10        # внутренний хост
+  #     local-port: "80"
+  #     descr: HTTP redirect to web server
+
+# ==============================================================================
+# DNSMASQ — DNS Forwarder + DHCP сервер (default в OPNsense 26.x)
+# ISC dhcpd удалён начиная с OPNsense 26.x; Kea DHCP — отдельный MVC-плагин.
+# ==============================================================================
+dnsmasq:
+  enable: true
+  port: "53053"                   # нестандартный порт — Unbound занимает 53
+  interface: lan                  # интерфейс для привязки (lan, opt1, …)
+
+  dhcp:
+    enable_ra: true               # IPv6 Router Advertisements
+
+  dhcp_ranges:
+    # IPv4 пул адресов для LAN
+    - interface: lan
+      start_addr: 192.168.1.100
+      end_addr: 192.168.1.199
+
+    # IPv6 пул адресов для LAN (суффикс в пределах delegated prefix)
+    - interface: lan
+      start_addr: "::1000"
+      end_addr: "::2000"
+      constructor: lan            # получить prefix от этого интерфейса
+      ra_mode: slaac              # slaac | ra-only | ra-stateless | ra-names
+
+  # regdhcp: false                # регистрировать DHCP-аренды в dnsmasq DNS
+  # regdhcpstatic: false          # регистрировать статические резервации
+  # strict_order: false           # опрашивать upstream DNS серверы по порядку
+
+# ==============================================================================
+# UNBOUND DNS RESOLVER
+# ==============================================================================
+unbound:
+  enable: true
+  dnssec: true                      # включить DNSSEC-валидацию
+  # forwarding: false               # пересылать запросы на upstream DNS
+  # forward_tls_upstream: false     # использовать DNS-over-TLS для upstream
+  # forward_servers: []             # upstream серверы (если forwarding=true)
+  # active_interface: ""            # интерфейсы для listening (пусто = все)
+  # outgoing_interface: ""          # интерфейсы для исходящих запросов
+  # hide_identity: true
+  # hide_version: true
+  # prefetch: false                 # кэш-prefetch популярных записей
+  # log_queries: false
+  # cache_max_ttl: 86400
+  # cache_min_ttl: 0
+  # custom_options: ""              # сырые строки unbound.conf
+
+  # Переопределения отдельных хостов:
+  # hosts:
+  #   - host: printer
+  #     domain: home.local
+  #     ip: 192.168.1.5
+  #     descr: "Office printer"
+
+  # Перенаправление домена на другой DNS:
+  # domainoverrides:
+  #   - domain: corp.example.com
+  #     ip: 10.0.0.53
+  #     descr: "Corporate DNS"

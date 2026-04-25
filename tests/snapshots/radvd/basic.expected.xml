@@ -1,0 +1,27 @@
+<radvd>
+  <entries uuid="60a0ec77-9e4a-5ba7-b3b4-4229185f7efe">
+    <enabled>1</enabled>
+    <interface>lan</interface>
+    <mode>stateless</mode>
+    <RDNSS>2001:db8::1</RDNSS>
+    <DNSSL>home.local</DNSSL>
+    <dns>1</dns>
+    <MinRtrAdvInterval>200</MinRtrAdvInterval>
+    <MaxRtrAdvInterval>600</MaxRtrAdvInterval>
+    <AdvLinkMTU>1500</AdvLinkMTU>
+    <AdvPreferredLifetime>14400</AdvPreferredLifetime>
+    <AdvValidLifetime>86400</AdvValidLifetime>
+    <AdvDefaultPreference>medium</AdvDefaultPreference>
+    <AdvCurHopLimit>64</AdvCurHopLimit>
+  </entries>
+  <entries uuid="37c430c8-55ce-5edd-a025-14d3c1862ac5">
+    <enabled>0</enabled>
+    <interface>opt1</interface>
+    <mode>managed</mode>
+    <dns>0</dns>
+    <MinRtrAdvInterval>200</MinRtrAdvInterval>
+    <MaxRtrAdvInterval>300</MaxRtrAdvInterval>
+    <AdvDefaultPreference>high</AdvDefaultPreference>
+    <AdvCurHopLimit>64</AdvCurHopLimit>
+  </entries>
+</radvd>

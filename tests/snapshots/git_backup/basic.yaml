@@ -1,0 +1,4 @@
+enabled: true
+url: "ssh://git@github.com/user/opnsense-backup.git"
+branch: main
+user: git-backup

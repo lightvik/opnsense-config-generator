@@ -1,0 +1,6 @@
+<QemuGuestAgent>
+  <general>
+    <Enabled>1</Enabled>
+    <LogDebug>0</LogDebug>
+  </general>
+</QemuGuestAgent>

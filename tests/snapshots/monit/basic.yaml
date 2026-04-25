@@ -1,0 +1,56 @@
+general:
+  enabled: true
+  interval: 60
+  startdelay: 30
+  mailserver: "smtp.example.com"
+  port: 587
+  username: "monit@example.com"
+  password: "secret"
+  ssl: true
+  sslversion: tlsv12
+  logfile: syslog facility log_daemon
+  httpd_enabled: true
+  httpd_username: admin
+  httpd_password: "adminpass"
+  httpd_port: 2812
+  httpd_allow: ["localhost", "192.168.1.0/24"]
+
+alerts:
+  - enabled: true
+    recipient: "admin@example.com"
+    noton: false
+    events: ["connection", "timeout", "nonexist"]
+    description: "Admin alert"
+
+tests:
+  - name: "CPU check"
+    type: SystemResource
+    condition: "cpu > 80% for 5 cycles"
+    action: alert
+
+  - name: "Memory check"
+    type: SystemResource
+    condition: "memory usage > 90%"
+    action: alert
+
+  - name: "Nginx connection"
+    type: Connection
+    condition: "failed port 80 protocol http"
+    action: restart
+
+services:
+  - enabled: true
+    name: "system"
+    type: system
+    tests: ["CPU check", "Memory check"]
+    description: "System resource monitoring"
+
+  - enabled: true
+    name: "nginx"
+    type: process
+    pidfile: "/var/run/nginx.pid"
+    start: "/usr/sbin/service nginx start"
+    stop: "/usr/sbin/service nginx stop"
+    tests: ["Nginx connection"]
+    depends: ["system"]
+    description: "Nginx web server"

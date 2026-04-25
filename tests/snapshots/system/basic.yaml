@@ -1,0 +1,25 @@
+hostname: fw01
+domain: home.local
+timezone: Europe/Moscow
+dnsserver:
+  - 8.8.8.8
+users:
+  - name: root
+    password: "$2b$12$WOdCdKlHn7i/gzS2kVNGReGOX81B0RkkkX3AjCOMV9RKWXDlwagDm"
+    descr: System Administrator
+    scope: system
+    groupname: admins
+    uid: 0
+    shell: /bin/sh
+groups:
+  - name: admins
+    description: System Administrators
+    scope: system
+    gid: 1999
+    members: [0]
+    priv: [page-all]
+webgui:
+  protocol: https
+ssh:
+  enabled: true
+  group: admins

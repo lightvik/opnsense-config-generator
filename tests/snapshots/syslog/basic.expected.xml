@@ -1,0 +1,17 @@
+<Syslog>
+  <general>
+    <enabled>1</enabled>
+    <loglocal>1</loglocal>
+    <maxpreserve>31</maxpreserve>
+  </general>
+  <destinations>
+    <destination uuid="c660f7f5-573e-55aa-b8cb-2e320be1e364">
+      <enabled>1</enabled>
+      <transport>udp4</transport>
+      <hostname>syslog.example.com</hostname>
+      <port>514</port>
+      <rfc5424>0</rfc5424>
+      <description>Remote syslog server</description>
+    </destination>
+  </destinations>
+</Syslog>

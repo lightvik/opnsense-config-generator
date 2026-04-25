@@ -1,0 +1,1384 @@
+{# =============================================================================
+   opnsense-config-generator — docs/full_config.yaml.j2
+   Документированный полный шаблон конфигурации OPNsense.
+   Содержит все поддерживаемые секции с описанием каждого параметра.
+
+   Это справочный файл. Рабочий шаблон для редактирования — config.yaml.j2
+   в корне проекта. Минимальная конфигурация — docs/minimal_config.yaml.j2.
+
+   JINJA2 ВОЗМОЖНОСТИ
+   ------------------
+   • env — словарь переменных окружения:
+         hostname: {{ env.MY_HOSTNAME }}
+         hostname: {{ env.get('MY_HOSTNAME', 'fw01') }}
+   • load_yaml('path.yaml') — загрузить внешний YAML (для secrets и т.д.):
+         {% set secrets = load_yaml('/etc/opnsense-secrets.yaml') %}
+         password: {{ secrets.admin_password }}
+   • Полный синтаксис Jinja2: условия ({% if %} / {% endif %}),
+     циклы ({% for %} / {% endfor %}), фильтры ({{ val | default('x') }}).
+
+   СТРУКТУРА ФАЙЛА
+   ---------------
+   • Обязательные поля — без комментария.
+   • Опциональные поля — закомментированы с примерами и пояснениями.
+   • Значения по умолчанию показаны в комментарии после поля.
+   ============================================================================= #}
+
+# ==============================================================================
+# SYSTEM
+# ==============================================================================
+system:
+  hostname: OPNsense                # имя хоста (без домена)
+  domain: internal                  # домен
+
+  # DNS-серверы (добавляются в /etc/resolv.conf и forwarding unbound)
+  dnsserver:
+    - 8.8.8.8
+    - 8.8.4.4
+
+  # Разрешить провайдеру переопределять DNS через DHCP (1 = да)
+  # dnsallowoverride: true
+
+  timezone: Etc/UTC                 # TZ-database name (Europe/Moscow, UTC, …)
+
+  # NTP-серверы системного уровня (строка через пробел, или список строк).
+  # Используется system ntp, а не ntpd-секция (см. ниже). Обычно не нужно.
+  # timeservers: "0.opnsense.pool.ntp.org 1.opnsense.pool.ntp.org"
+
+  # Оптимизация pf: normal | high-latency | aggressive | conservative
+  # optimization: normal
+
+  # -----------------------------------------------------------------------
+  # WEB GUI
+  # -----------------------------------------------------------------------
+  webgui:
+    protocol: https                 # http | https
+    # port: ""                      # пустая строка = 443/80 по умолчанию
+    # interfaces: ""                # пустая строка = все интерфейсы
+    # nohttpreferercheck: false     # отключить проверку HTTP Referer
+    # loginautocomplete: false      # разрешить автозаполнение формы входа
+    # ssl_certref: ""               # refid сертификата из секции certs
+
+  # -----------------------------------------------------------------------
+  # SSH
+  # -----------------------------------------------------------------------
+  ssh:
+    enabled: false                  # true = включить SSH-демон
+    group: admins                   # группа, которой разрешён SSH-доступ
+    # permitrootlogin: false        # разрешить root login по SSH
+    # passwordauth: true            # разрешить аутентификацию по паролю
+
+  # -----------------------------------------------------------------------
+  # ПОЛЬЗОВАТЕЛИ
+  # Пароль указывается plaintext — в XML пишется bcrypt-хэш.
+  # Если пароль уже хэширован ($2b$...) — используется как есть.
+  # -----------------------------------------------------------------------
+  users:
+    - name: root
+      password: "opnsense"          # ЗАМЕНИТЕ на свой пароль
+      descr: System Administrator
+      scope: system                 # system | user
+      groupname: admins
+      uid: 0
+      shell: /bin/sh
+      # expires: ""                 # дата истечения: MM/DD/YYYY или пусто
+
+    # Дополнительный пользователь:
+    # - name: alice
+    #   password: "s3cr3t"
+    #   descr: Alice
+    #   scope: user
+    #   groupname: admins
+    #   uid: 2000
+    #   shell: /bin/sh
+
+  # -----------------------------------------------------------------------
+  # ГРУППЫ
+  # -----------------------------------------------------------------------
+  groups:
+    - name: admins
+      description: System Administrators
+      scope: system                 # system | group
+      gid: 1999
+      members: [0]                  # список uid пользователей
+      priv: [page-all]              # привилегии (page-all = полный доступ)
+
+    # Группа только для чтения:
+    # - name: readonly
+    #   description: Read-only operators
+    #   scope: group
+    #   gid: 2000
+    #   members: [2000]
+    #   priv: [page-dashboard-all, page-status-*]
+
+  # Misc настройки (обычно менять не нужно)
+  # disablenatreflection: "yes"     # yes | no
+  # usevirtualterminal: true
+  # disableconsolemenu: false
+  # ipv6allow: true
+  # pf_share_forward: true
+  # lb_use_sticky: true
+  # rrdbackup: -1
+  # netflowbackup: -1
+
+# ==============================================================================
+# INTERFACES
+# Ключ = имя назначения интерфейса: wan, lan, opt1, opt2, …
+# ==============================================================================
+interfaces:
+  interfaces:
+    wan:
+      if: vtnet0                    # физический интерфейс (vtnet0, em0, igb0, …)
+      ipaddr: dhcp                  # dhcp | статический IP | pppoe
+      ipaddrv6: dhcp6               # dhcp6 | slaac | статический IPv6 | ""
+      blockpriv: true               # блокировать RFC1918 с WAN
+      blockbogons: true             # блокировать bogons с WAN
+      # mtu: ""                     # MTU, пусто = авто
+      # media: ""                   # скорость/дуплекс (autoselect, 1000baseT…)
+      # mediaopt: ""
+      # dhcphostname: ""            # имя хоста для DHCP-запроса
+      # spoofmac: ""                # подменить MAC
+      # dhcp6-ia-pd-len: 0          # длина prefix delegation (0-32)
+
+    lan:
+      if: vtnet1
+      ipaddr: 192.168.1.1
+      subnet: "24"                  # длина маски (без слэша)
+      ipaddrv6: idassoc6            # idassoc6 = использовать delegated prefix от WAN
+      subnetv6: "64"
+      track6-interface: wan         # WAN-интерфейс с prefix delegation
+      track6-prefix-id: 0
+
+    # Пример OPT-интерфейса со статическим IP:
+    # opt1:
+    #   if: vtnet2
+    #   descr: DMZ
+    #   ipaddr: 10.0.0.1
+    #   subnet: "24"
+    #   ipaddrv6: ""
+
+    # Пример PPPoE на WAN:
+    # wan:
+    #   if: vtnet0
+    #   ipaddr: pppoe
+    #   username: user@provider.ru
+    #   password: pppoe_password
+    #   pppoe-reset-type: ""        # "" | custom | preset
+
+# ==============================================================================
+# VLANS
+# ==============================================================================
+# vlans:
+#   vlans:
+#     - if: vtnet0                  # родительский интерфейс
+#       tag: 100                    # VLAN ID (1-4094)
+#       pcp: 0                      # PCP/CoS (0-7)
+#       descr: "VLAN 100"
+#       vlanif: vtnet0.100          # имя vlan-интерфейса (опционально)
+#
+#     - if: vtnet0
+#       tag: 200
+#       pcp: 0
+#       descr: "VLAN 200"
+#       vlanif: vtnet0.200
+
+# ==============================================================================
+# BRIDGES
+# ==============================================================================
+# bridges:
+#   bridges:
+#     - bridgeif: bridge0
+#       members: [vtnet2, vtnet3]
+#       descr: "LAN bridge"
+#       stp: false                  # Spanning Tree Protocol
+#       rstp: false                 # Rapid STP
+#       maxaddr: 100                # максимум MAC-адресов в таблице
+#       timeout: 240                # таймаут записи в таблице (сек)
+
+# ==============================================================================
+# LAGGS (Link Aggregation)
+# ==============================================================================
+# laggs:
+#   laggs:
+#     - laggif: lagg0
+#       proto: lacp                 # lacp | failover | loadbalance | roundrobin | none
+#       members: [igb0, igb1]
+#       laggport: [igb0, igb1]
+#       descr: "LACP uplink"
+
+# ==============================================================================
+# GATEWAYS
+# ==============================================================================
+# gateways:
+#   gateways:
+#     - name: GW_WAN
+#       interface: wan
+#       gateway: 203.0.113.1
+#       ipprotocol: inet            # inet | inet6
+#       descr: "WAN Gateway"
+#       defaultgw: true             # установить шлюзом по умолчанию
+#       monitor_disable: false      # не мониторить доступность
+#       monitor: ""                 # IP для пинга (пусто = gateway)
+#       weight: 1                   # 1-30
+#       interval: 1                 # интервал проверки (сек)
+#       loss_interval: 2
+#       time_period: 60
+#       alert_interval: 1
+#
+#     - name: GW_WAN6
+#       interface: wan
+#       gateway: "2001:db8::1"
+#       ipprotocol: inet6
+#       descr: "WAN IPv6 Gateway"
+#       defaultgw: true
+
+# ==============================================================================
+# STATIC ROUTES
+# ==============================================================================
+# staticroutes:
+#   routes:
+#     - network: 10.0.0.0/8
+#       gateway: GW_WAN             # имя шлюза или IP
+#       descr: "Office network"
+#       disabled: false
+#
+#     - network: 172.16.0.0/12
+#       gateway: 192.168.1.254
+#       descr: "Partner network"
+
+# ==============================================================================
+# ALIASES (для использования в правилах фаервола)
+# ==============================================================================
+# aliases:
+#   aliases:
+#     - name: RFC1918
+#       type: network               # host | network | port | url | urltable | geoip
+#       descr: "Private networks"
+#       content:
+#         - 10.0.0.0/8
+#         - 172.16.0.0/12
+#         - 192.168.0.0/16
+#       enabled: true
+#
+#     - name: DNS_PORTS
+#       type: port
+#       content: ["53", "853"]
+#
+#     - name: ADMIN_HOSTS
+#       type: host
+#       descr: "Management workstations"
+#       content:
+#         - 192.168.1.10
+#         - 192.168.1.11
+#
+#     - name: BLOCKLIST
+#       type: urltable
+#       descr: "External blocklist"
+#       content:
+#         - https://example.com/blocklist.txt
+#       updatefreq: 1               # частота обновления (дни)
+
+# ==============================================================================
+# FIREWALL RULES
+# ==============================================================================
+filter:
+  rules:
+    # Разрешить весь трафик с LAN наружу (IPv4)
+    - type: pass
+      ipprotocol: inet
+      interface: lan
+      descr: Default allow LAN to any rule
+      source:
+        network: lan               # lan | wan | opt1 | IP/маска | имя алиаса
+      destination:
+        any: true
+
+    # Разрешить весь трафик с LAN наружу (IPv6)
+    - type: pass
+      ipprotocol: inet6
+      interface: lan
+      descr: Default allow LAN IPv6 to any rule
+      source:
+        network: lan
+      destination:
+        any: true
+
+    # Пример блокирующего правила:
+    # - type: block
+    #   ipprotocol: inet
+    #   interface: lan
+    #   descr: Block social media
+    #   protocol: tcp
+    #   source:
+    #     network: lan
+    #   destination:
+    #     address: 157.240.0.0/16
+    #     port: "443"
+    #   log: true
+
+    # Пример правила с алиасом:
+    # - type: block
+    #   ipprotocol: inet
+    #   interface: lan
+    #   descr: Block RFC1918 from DMZ
+    #   source:
+    #     network: opt1
+    #   destination:
+    #     address: RFC1918          # имя алиаса
+    #   log: true
+
+    # Пример входящего правила на WAN:
+    # - type: pass
+    #   ipprotocol: inet
+    #   interface: wan
+    #   direction: in
+    #   protocol: tcp
+    #   descr: Allow HTTPS from internet
+    #   source:
+    #     any: true
+    #   destination:
+    #     address: 203.0.113.1
+    #     port: "443"
+
+    # Пример правила с диапазоном портов:
+    # - type: pass
+    #   ipprotocol: inet
+    #   interface: lan
+    #   protocol: tcp
+    #   descr: Allow passive FTP
+    #   source:
+    #     network: lan
+    #   destination:
+    #     any: true
+    #     port: "1024:65535"        # диапазон: start:end
+
+# ==============================================================================
+# NAT
+# ==============================================================================
+nat:
+  outbound_mode: automatic          # automatic | hybrid | advanced | disabled
+
+  # Правила outbound NAT (только для hybrid/advanced):
+  # outbound_rules:
+  #   - interface: wan
+  #     source: 192.168.1.0/24
+  #     sourceport: ""
+  #     destination: any
+  #     destinationport: ""
+  #     target: ""                  # пусто = IP интерфейса
+  #     targetip_subnet: 0
+  #     protocol: any
+  #     descr: "Custom outbound NAT"
+  #     disabled: false
+  #     nonat: false                # true = исключение из NAT
+
+  # Port forwarding (DNAT):
+  # port_forwards:
+  #   - interface: wan
+  #     protocol: tcp
+  #     source:
+  #       any: true
+  #     destination:
+  #       address: 203.0.113.1      # внешний IP WAN
+  #       port: "8080"
+  #     target: 192.168.1.10        # внутренний хост
+  #     local-port: "80"
+  #     descr: HTTP redirect to web server
+  #     disabled: false
+  #
+  #   - interface: wan
+  #     protocol: tcp
+  #     source:
+  #       any: true
+  #     destination:
+  #       address: 203.0.113.1
+  #       port: "22022"
+  #     target: 192.168.1.5
+  #     local-port: "22"
+  #     descr: SSH to internal host
+
+  # 1:1 NAT:
+  # one_to_one:
+  #   - interface: wan
+  #     type: binat
+  #     external: 203.0.113.2       # внешний IP
+  #     source: 192.168.1.20        # внутренний IP или подсеть
+  #     descr: "Server 1:1 NAT"
+  #     disabled: false
+
+# ==============================================================================
+# DNSMASQ — DNS Forwarder + DHCP сервер (default в OPNsense 26.x)
+# ISC dhcpd удалён начиная с OPNsense 26.x; Kea DHCP — отдельный MVC-плагин.
+# ==============================================================================
+dnsmasq:
+  enable: true
+  port: "53053"                     # нестандартный порт — Unbound занимает 53
+  interface: lan                    # интерфейс для привязки (lan, opt1, …)
+
+  dhcp:
+    enable_ra: true                 # IPv6 Router Advertisements
+
+  dhcp_ranges:
+    # IPv4 пул адресов для LAN
+    - interface: lan
+      start_addr: 192.168.1.100
+      end_addr: 192.168.1.199
+
+    # IPv6 пул адресов для LAN (суффикс в пределах delegated prefix)
+    - interface: lan
+      start_addr: "::1000"
+      end_addr: "::2000"
+      constructor: lan              # получить prefix от этого интерфейса
+      ra_mode: slaac                # slaac | ra-only | ra-stateless | ra-names
+
+    # DHCP для OPT-интерфейса:
+    # - interface: opt1
+    #   start_addr: 10.0.0.100
+    #   end_addr: 10.0.0.199
+
+  # regdhcp: false                  # регистрировать DHCP-аренды в dnsmasq DNS
+  # regdhcpstatic: false            # регистрировать статические резервации
+  # strict_order: false             # опрашивать upstream DNS серверы по порядку
+
+# ==============================================================================
+# UNBOUND DNS RESOLVER
+# ==============================================================================
+unbound:
+  enable: true
+  dnssec: true                      # включить DNSSEC-валидацию
+  # forwarding: false               # пересылать запросы на upstream DNS
+  # forward_tls_upstream: false     # использовать DNS-over-TLS для upstream
+  # forward_servers: []             # upstream серверы (если forwarding=true)
+  # active_interface: ""            # интерфейсы для listening (пусто = все)
+  # outgoing_interface: ""          # интерфейсы для исходящих запросов
+  # hide_identity: true
+  # hide_version: true
+  # prefetch: false                 # кэш-prefetch популярных записей
+  # prefetch_key: false
+  # dns64: false                    # DNS64 (для NAT64)
+  # log_queries: false
+  # cache_max_ttl: 86400
+  # cache_min_ttl: 0
+  # custom_options: ""              # сырые строки unbound.conf
+
+  # Переопределения отдельных хостов:
+  # hosts:
+  #   - host: printer
+  #     domain: home.local
+  #     ip: 192.168.1.5
+  #     descr: "Office printer"
+  #   - host: nas
+  #     domain: home.local
+  #     ip: 192.168.1.20
+  #     descr: "NAS storage"
+
+  # Перенаправление домена на другой DNS:
+  # domainoverrides:
+  #   - domain: corp.example.com
+  #     ip: 10.0.0.53
+  #     descr: "Corporate DNS"
+  #   - domain: ad.local
+  #     ip: 192.168.1.250
+  #     descr: "Active Directory DNS"
+
+# ==============================================================================
+# NTP (ntpd)
+# Legacy-секция; настраивает chrony/ntpd прямо в config.xml.
+# ==============================================================================
+ntpd:
+  servers:
+    - address: 0.opnsense.pool.ntp.org
+      pool: true                    # пул (ispool): несколько адресов за одним именем
+      prefer: true                  # предпочитаемый источник
+    - address: 1.opnsense.pool.ntp.org
+      pool: true
+    - address: 2.opnsense.pool.ntp.org
+      pool: true
+    - address: 3.opnsense.pool.ntp.org
+      pool: true
+    # Статический NTP-сервер (не пул):
+    # - address: ntp.example.com
+    #   pool: false
+    #   prefer: false
+    #   noselect: false             # не использовать для синхронизации (только мониторинг)
+
+  # interface: ""                   # bind только на этот интерфейс (пусто = все)
+  # orphan: 12                      # orphan stratum при отсутствии upstream
+
+# ==============================================================================
+# PKI — сертификаты и центры сертификации
+# crt и prv — base64-encoded PEM (base64 -w0 < cert.pem)
+# Примечание: caref в cert ссылается на поле descr CA-записи.
+# ==============================================================================
+certs:
+  # Корневой CA:
+  ca:
+    - descr: "My Root CA"
+      crt: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t..."   # base64(PEM)
+      prv: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0t..."   # base64(PEM)
+      serial: 1
+
+    # Промежуточный CA (caref = descr родительского CA):
+    # - descr: "Intermediate CA"
+    #   crt: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t..."
+    #   prv: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0t..."
+    #   caref: "My Root CA"
+    #   serial: 1
+
+  # Серверные/клиентские сертификаты:
+  cert:
+    - descr: "VPN Server Cert"
+      crt: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t..."
+      prv: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0t..."
+      caref: "My Root CA"           # descr CA, которым подписан (пусто = self-signed)
+
+    # - descr: "WebGUI Cert"
+    #   crt: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t..."
+    #   prv: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0t..."
+    #   caref: "My Root CA"
+
+# ==============================================================================
+# WIREGUARD (MVC-плагин, //OPNsense/wireguard)
+# peers в server задаются именами клиентов — UUID резолвится автоматически.
+# ==============================================================================
+wireguard:
+  enabled: true
+
+  servers:
+    - name: wg0
+      privkey: "cHJpdmF0ZWtleWhlcmUxMjM0NTY3ODkwYWJjZGVmZ2g="   # base64 WG private key
+      pubkey:  "cHVibGlja2V5aGVyZTEyMzQ1Njc4OTBhYmNkZWZnaA=="    # base64 WG public key
+      port: "51820"
+      tunneladdress:
+        - "10.0.0.1/24"             # IP туннельного интерфейса сервера
+      peers:
+        - laptop                    # имена клиентов из секции clients ниже
+        - phone
+      # mtu: 1420
+      # dns: []
+      # disableroutes: false        # не добавлять маршруты автоматически
+      # gateway: ""
+      # description: "Main WireGuard server"
+      # enabled: true
+
+  clients:
+    - name: laptop
+      pubkey: "bGFwdG9wUHViS2V5SGVyZTEyMzQ1Njc4OTBhYmM="
+      tunneladdress:
+        - "10.0.0.2/32"
+      # psk: ""                     # pre-shared key (base64)
+      # serveraddress: ""           # для road warrior: адрес сервера
+      # serverport: "51820"
+      # keepalive: 25               # секунды
+      # description: ""
+
+    - name: phone
+      pubkey: "cGhvbmVQdWJLZXlIZXJlMTIzNDU2Nzg5MGFiY2Q="
+      tunneladdress:
+        - "10.0.0.3/32"
+      keepalive: 25
+
+# ==============================================================================
+# OPENVPN (MVC-плагин, //OPNsense/OpenVPN)
+# ==============================================================================
+openvpn:
+  # Статические ключи (tls-auth / tls-crypt):
+  # static_keys:
+  #   - mode: crypt                 # auth | crypt
+  #     description: "TLS key wg0"
+  #     key: |
+  #       -----BEGIN OpenVPN Static key V1-----
+  #       ...
+  #       -----END OpenVPN Static key V1-----
+
+  instances:
+    - description: "Road Warrior VPN"
+      role: server                  # server | client
+      dev_type: tun                 # tun | tap
+      proto: udp                    # udp | udp4 | udp6 | tcp | tcp4 | tcp6
+      port: "1194"
+      server: "10.8.0.0/24"        # пул адресов для клиентов
+      # server_ipv6: ""
+      topology: subnet              # subnet | net30 | p2p
+      ca: "My Root CA"              # descr CA из секции certs
+      cert: "VPN Server Cert"       # descr сертификата из секции certs
+      # tls_key: ""                 # description StaticKey
+      verify_client_cert: require   # require | none
+      # remote_cert_tls: false
+      auth: "SHA256"
+      data_ciphers:
+        - AES-256-GCM
+        - AES-128-GCM
+        - CHACHA20-POLY1305
+      data_ciphers_fallback: "AES-256-CBC"
+      push_route:
+        - "192.168.1.0/24"         # маршруты, передаваемые клиентам
+      dns_servers:
+        - 192.168.1.1
+      keepalive_interval: 10
+      keepalive_timeout: 60
+      # maxclients: 100
+      verb: "3"
+      # redirect_gateway: []       # "def1", "ipv6", "bypass-dhcp", …
+      # various_flags: []          # "persist-key", "persist-tun", …
+      # local: ""                  # bind address (пусто = все интерфейсы)
+      # enabled: true
+
+    # Пример клиентского подключения:
+    # - description: "Site-to-site client"
+    #   role: client
+    #   dev_type: tun
+    #   proto: udp
+    #   port: "1194"
+    #   remote: "vpn.example.com"
+    #   ca: "My Root CA"
+    #   cert: "VPN Server Cert"
+    #   data_ciphers:
+    #     - AES-256-GCM
+
+# ==============================================================================
+# IPSEC (MVC-плагин, //OPNsense/Swanctl)
+# Структура: connection → local/remote auth → child SA (туннели).
+# connection в local/remote/children задаётся через description соединения.
+# ==============================================================================
+ipsec:
+  connections:
+    - description: "Site-to-Site VPN"
+      version: "2"                  # "0"=IKEv1+v2 | "1"=IKEv1 | "2"=IKEv2
+      local_addrs: "203.0.113.1"    # наш внешний IP (пусто = любой)
+      remote_addrs: "198.51.100.1"  # IP удалённой стороны
+      proposals: "default"          # IKE proposals (default = стандартный набор)
+      unique: "no"                  # no | never | keep | replace
+      mobike: true                  # MOBIKE (IKEv2 mobility)
+      # reauth_time: 3600           # реаутентификация (сек)
+      # rekey_time: 14400           # повторная генерация ключа (сек)
+      # dpd_delay: 30               # Dead Peer Detection интервал (сек)
+      # dpd_timeout: 150            # DPD таймаут (сек)
+      # encap: false                # NAT-T (UDP encapsulation)
+      # send_certreq: true
+      # keyingtries: 0              # 0 = бесконечно
+      # pools: []                   # имена пулов из секции pools
+      # enabled: true
+
+  # Аутентификация нашей стороны:
+  locals:
+    - connection: "Site-to-Site VPN"   # description соединения выше
+      auth: psk                        # psk | pubkey | eap-tls | eap-mschapv2
+      id: "203.0.113.1"               # наш IKE identity
+      # round: 0
+      # eap_id: ""
+      # certs: []                      # certref для pubkey/eap-tls
+      # description: ""
+      # enabled: true
+
+  # Аутентификация удалённой стороны:
+  remotes:
+    - connection: "Site-to-Site VPN"
+      auth: psk
+      id: "198.51.100.1"
+      # round: 0
+      # eap_id: ""
+      # certs: []
+      # cacerts: []
+      # description: ""
+      # enabled: true
+
+  # Child SA — туннели (ESP):
+  children:
+    - connection: "Site-to-Site VPN"
+      description: "LAN-to-LAN"
+      local_ts:
+        - "192.168.1.0/24"         # наша подсеть
+      remote_ts:
+        - "10.10.0.0/24"           # удалённая подсеть
+      esp_proposals: "default"
+      mode: tunnel                 # tunnel | transport | pass | drop
+      start_action: start          # none | route | start | trap
+      close_action: none           # none | trap | start
+      dpd_action: clear            # clear | trap | start
+      rekey_time: 3600
+      # policies: true
+      # sha256_96: false
+      # reqid: null
+      # enabled: true
+
+  # IP-пулы для VPN-клиентов (Road Warrior):
+  # pools:
+  #   - name: "roadwarrior_pool"
+  #     addrs: "10.20.0.0/24"
+  #     dns:
+  #       - 192.168.1.1
+  #     enabled: true
+
+# ==============================================================================
+# SYSLOG (MVC-плагин, //OPNsense/Syslog)
+# ==============================================================================
+syslog:
+  general:
+    enabled: true
+    loglocal: true                  # писать логи в локальные файлы
+    maxpreserve: 31                 # хранить логи за N дней
+    # maxfilesize: null             # максимальный размер лог-файла (байт)
+
+  # destinations:
+  #   - enabled: true
+  #     transport: udp4             # udp4 | tcp4 | udp6 | tcp6 | tls4 | tls6
+  #     hostname: syslog.example.com
+  #     port: 514
+  #     rfc5424: false              # true = RFC 5424 format, false = BSD syslog
+  #     description: "Remote syslog"
+  #     # level: []                 # фильтр по уровням: debug info notice warn err crit alert emerg
+  #     # facility: []              # фильтр по facility (kern, user, mail, …)
+  #     # program: []               # фильтр по имени программы
+  #     # certificate: ""           # certref для TLS transport
+  #
+  #   # TLS syslog:
+  #   - enabled: true
+  #     transport: tls4
+  #     hostname: syslog-tls.example.com
+  #     port: 6514
+  #     rfc5424: true
+  #     certificate: "VPN Server Cert"
+  #     description: "Secure syslog"
+
+# ==============================================================================
+# CRON (MVC-плагин, //OPNsense/cron)
+# origin: "cron" — системные задачи; используйте "cron" для пользовательских.
+# ==============================================================================
+cron:
+  jobs:
+    - origin: cron
+      enabled: true
+      minutes: "0"
+      hours: "4"
+      days: "*"
+      months: "*"
+      weekdays: "*"
+      who: root
+      command: "firmware update"
+      description: "Daily firmware update check"
+      # parameters: ""                # дополнительные аргументы команды
+
+    # Запуск в первый день каждого месяца в 03:30:
+    # - origin: cron
+    #   enabled: false
+    #   minutes: "30"
+    #   hours: "3"
+    #   days: "1"
+    #   months: "*"
+    #   weekdays: "*"
+    #   who: root
+    #   command: "firmware changelog"
+    #   parameters: "verbose"
+    #   description: "Monthly changelog fetch"
+
+    # Запуск каждый понедельник в 02:00:
+    # - origin: cron
+    #   enabled: true
+    #   minutes: "0"
+    #   hours: "2"
+    #   days: "*"
+    #   months: "*"
+    #   weekdays: "1"                 # 0=Sun, 1=Mon, …, 7=Sun
+    #   who: root
+    #   command: "configctl firmware run cleanuppackages"
+    #   description: "Weekly package cleanup"
+
+# ==============================================================================
+# MONIT (MVC-плагин, //OPNsense/Monit)
+# Мониторинг служб с автоматическим перезапуском и оповещением.
+# Сервисы ссылаются на тесты по имени — UUID резолвится автоматически.
+# ==============================================================================
+monit:
+  general:
+    enabled: true
+    interval: 60                      # интервал проверки (сек)
+    startdelay: 30                    # задержка запуска monit после старта системы (сек)
+    mailserver: "smtp.example.com"    # SMTP сервер для оповещений
+    port: 587
+    username: "monit@example.com"
+    password: "secret"
+    ssl: true
+    sslversion: tlsv12                # auto | tlsv1 | tlsv11 | tlsv12 | tlsv13
+    # sslverify: true                 # проверять TLS-сертификат сервера
+    logfile: syslog facility log_daemon
+    # statefile: ""                   # файл для хранения состояния
+    httpd_enabled: true               # включить встроенный HTTP-интерфейс monit
+    httpd_username: admin
+    httpd_password: "adminpass"
+    httpd_port: 2812
+    httpd_allow:                      # список разрешённых IP/сетей
+      - localhost
+      - 192.168.1.0/24
+    # eventqueue_path: ""             # каталог очереди событий
+    # eventqueue_slots: null          # размер очереди (null = без ограничений)
+    # mmonit_url: ""                  # URL M/Monit сервера
+    # mmonit_timeout: 5
+    # mmonit_register_credentials: true
+
+  # Получатели оповещений:
+  alerts:
+    - enabled: true
+      recipient: "admin@example.com"
+      noton: false                    # false = слать при событиях; true = слать при отсутствии событий
+      events:                         # события для оповещения (пусто = все)
+        - connection
+        - timeout
+        - nonexist
+      description: "Admin alert"
+      # format: ""                    # шаблон письма
+      # reminder: null                # повторять оповещение каждые N проверок
+
+  # Тесты (условия мониторинга), на которые ссылаются сервисы:
+  tests:
+    - name: "CPU check"
+      type: SystemResource            # Existence | SystemResource | ProcessResource |
+                                      # ProcessDiskIO | Connection | NetworkInterface | …
+      condition: "cpu > 80% for 5 cycles"
+      action: alert                   # alert | restart | start | stop | exec | unmonitor
+
+    - name: "Memory check"
+      type: SystemResource
+      condition: "memory usage > 90%"
+      action: alert
+
+    - name: "Nginx connection"
+      type: Connection
+      condition: "failed port 80 protocol http"
+      action: restart
+
+    # - name: "Disk space"
+    #   type: SpaceUsage
+    #   condition: "space usage > 85%"
+    #   action: alert
+
+    # - name: "Ping check"
+    #   type: NetworkPing
+    #   condition: "failed ping count 3 with timeout 5 seconds"
+    #   action: alert
+
+  # Мониторируемые сервисы:
+  services:
+    - enabled: true
+      name: "system"
+      type: system                    # system | process | file | filesystem | host | network | custom
+      tests:
+        - "CPU check"
+        - "Memory check"
+      description: "System resource monitoring"
+
+    - enabled: true
+      name: "nginx"
+      type: process
+      pidfile: "/var/run/nginx.pid"
+      start: "/usr/sbin/service nginx start"
+      stop: "/usr/sbin/service nginx stop"
+      tests:
+        - "Nginx connection"
+      depends:
+        - "system"                    # имена сервисов-зависимостей
+      description: "Nginx web server"
+      # match: ""                     # regexp-паттерн для поиска процесса (вместо pidfile)
+      # timeout: 300                  # таймаут запуска/остановки (сек)
+      # starttimeout: 30
+      # polltime: ""                  # индивидуальный интервал проверки
+
+    # Мониторинг хоста:
+    # - enabled: true
+    #   name: "gateway"
+    #   type: host
+    #   address: 8.8.8.8
+    #   tests:
+    #     - "Ping check"
+    #   description: "Internet connectivity check"
+
+    # Мониторинг файловой системы:
+    # - enabled: true
+    #   name: "rootfs"
+    #   type: filesystem
+    #   path: "/"
+    #   tests:
+    #     - "Disk space"
+    #   description: "Root filesystem"
+
+# ==============================================================================
+# TRAFFIC SHAPER (MVC-плагин, //OPNsense/TrafficShaper)
+# Иерархия: pipe → queue → rule.
+# Правила ссылаются на pipe/queue по description — UUID резолвится автоматически.
+# ==============================================================================
+trafficshaper:
+  # Pipes — каналы с ограничением полосы:
+  pipes:
+    - number: 1
+      description: "WAN Download"
+      bandwidth: 100
+      bandwidth_metric: Mbit         # bit | Kbit | Mbit | Gbit
+      mask: none                     # none | src-ip | dst-ip | src-ip6 | dst-ip6
+      # enabled: true
+      # queue: null                  # размер очереди (пакетов)
+      # buckets: null                # hash-таблица для per-flow шейпинга
+      # scheduler: ""                # "" | fifo | rr | qfq | fq_codel | fq_pie
+      # delay: null                  # задержка (мс)
+      # codel_enable: false
+      # pie_enable: false
+      # origin: ""
+
+    - number: 2
+      description: "WAN Upload"
+      bandwidth: 20
+      bandwidth_metric: Mbit
+      mask: none
+
+  # Queues — очереди внутри pipe с весами:
+  queues:
+    - number: 1
+      description: "WAN High Priority"
+      pipe: "WAN Download"           # description родительского pipe
+      weight: 70                     # относительный вес (сумма не обязана быть 100)
+      # enabled: true
+      # mask: none
+      # buckets: null
+      # codel_enable: false
+      # pie_enable: false
+      # origin: ""
+
+    - number: 2
+      description: "WAN Low Priority"
+      pipe: "WAN Download"
+      weight: 30
+
+  # Rules — правила назначения трафика на pipe/queue:
+  rules:
+    - sequence: 1
+      interface: wan
+      proto: tcp                     # ip | ip4 | ip6 | udp | tcp | icmp | …
+      source: any                    # any | IP | subnet
+      destination: any
+      dst_port: "80,443"             # порт / список / диапазон "80:443"
+      direction: in                  # "" | in | out
+      target_queue: "WAN High Priority"  # description очереди (или target_pipe)
+      description: "Prioritize web traffic"
+      # enabled: true
+      # source_not: false            # инвертировать источник
+      # destination_not: false
+      # src_port: any
+      # interface2: ""               # второй интерфейс (для двунаправленных правил)
+      # iplen: null                  # фильтр по размеру IP-пакета
+      # dscp: []                     # фильтр по DSCP-меткам
+
+    - sequence: 100
+      interface: wan
+      proto: ip
+      source: any
+      destination: any
+      target_pipe: "WAN Download"    # description pipe (вместо target_queue)
+      description: "Default WAN Download shaping"
+
+    # - sequence: 200
+    #   interface: wan
+    #   proto: ip
+    #   source: any
+    #   destination: any
+    #   target_pipe: "WAN Upload"
+    #   direction: out
+    #   description: "Default WAN Upload shaping"
+
+# ==============================================================================
+# RADVD — Router Advertisement Daemon (MVC-плагин, //OPNsense/radvd)
+# IPv6 Router Advertisements. Режимы:
+#   router    — полноценный IPv6 gateway (stateful DHCPv6)
+#   unmanaged — только RA без DHCPv6
+#   managed   — managed (клиенты берут адрес по DHCPv6)
+#   assist    — помощник (работает совместно с другим RA)
+#   stateless — stateless autoconfiguration (SLAAC)
+# ==============================================================================
+radvd:
+  entries:
+    - interface: lan
+      mode: stateless                # router | unmanaged | managed | assist | stateless
+      rdnss:
+        - "2001:db8::1"             # DNS-серверы для клиентов
+      dnssl:
+        - "home.local"              # суффиксы поиска DNS
+      adv_link_mtu: 1500            # MTU для клиентов
+      adv_valid_lifetime: 86400     # время жизни prefix (сек)
+      adv_preferred_lifetime: 14400
+      # enabled: true
+      # base6_interface: ""         # источник prefix (пусто = собственный)
+      # min_rtr_adv_interval: 200   # мин. интервал RA (сек)
+      # max_rtr_adv_interval: 600   # макс. интервал RA (сек)
+      # adv_default_preference: medium   # low | medium | high
+      # adv_default_lifetime: null  # время жизни шлюза по умолчанию (сек)
+      # adv_rdnss_lifetime: null    # время жизни RDNSS
+      # adv_dnssl_lifetime: null    # время жизни DNSSL
+      # adv_route_lifetime: null
+      # adv_ra_src_address: ""      # IP-адрес источника RA
+      # routes: []                  # дополнительные маршруты для рекламы
+      # nat64prefix: ""             # NAT64 prefix (RFC 8781)
+      # adv_cur_hop_limit: 64
+      # dns: true                   # включать RDNSS/DNSSL в RA
+      # deprecate_prefix: null      # on | off
+      # remove_adv_on_exit: null    # on | off
+      # remove_route: null          # on | off
+
+    # Managed-режим (DHCPv6):
+    # - interface: opt1
+    #   mode: managed
+    #   enabled: true
+    #   max_rtr_adv_interval: 300
+    #   adv_default_preference: high
+
+# ==============================================================================
+# KEA DHCP (MVC-плагин, //OPNsense/kea)
+# Современный ISC Kea DHCP. Заменяет ISC dhcpd начиная с OPNsense 24.x.
+# Резервации ссылаются на subnet по CIDR-строке — UUID резолвится автоматически.
+# ==============================================================================
+kea:
+  # DHCPv4:
+  dhcp4:
+    enabled: true
+    interfaces:
+      - lan                          # интерфейсы для раздачи адресов
+    valid_lifetime: 4000             # время аренды (сек)
+    # fwrules: true                  # автоматически создавать правила фаервола
+
+    subnets:
+      - subnet: "192.168.1.0/24"
+        pools:
+          - "192.168.1.100-192.168.1.200"  # диапазон выдаваемых адресов
+        option_data:
+          routers: "192.168.1.1"
+          domain_name_servers:
+            - 8.8.8.8
+            - 8.8.4.4
+          domain_name: "home.local"
+          # domain_search: []
+          # ntp_servers: []
+          # tftp_server_name: ""
+          # boot_file_name: ""
+        # option_data_autocollect: true   # собирать опции из настроек интерфейса
+        # description: ""
+
+      # Второй subnet (DMZ):
+      # - subnet: "10.0.0.0/24"
+      #   pools:
+      #     - "10.0.0.100-10.0.0.199"
+      #   option_data:
+      #     routers: "10.0.0.1"
+      #     domain_name_servers: ["192.168.1.1"]
+
+    # Статические резервации:
+    # reservations:
+    #   - subnet: "192.168.1.0/24"  # CIDR родительского subnet
+    #     hw_address: "aa:bb:cc:dd:ee:ff"
+    #     ip_address: "192.168.1.10"
+    #     hostname: "printer"
+    #     description: "Office printer"
+
+  # DHCPv6:
+  # dhcp6:
+  #   enabled: true
+  #   interfaces:
+  #     - lan
+  #   valid_lifetime: 4000
+  #   subnets:
+  #     - subnet: "2001:db8::/48"
+  #       interface: lan
+  #       pools:
+  #         - "2001:db8::1000-2001:db8::2000"
+  #       option_data:
+  #         dns_servers: ["2001:db8::1"]
+  #         domain_search: ["home.local"]
+  #   reservations:
+  #     - subnet: "2001:db8::/48"
+  #       duid: "00:03:00:01:aa:bb:cc:dd:ee:ff"
+  #       ip_address: "2001:db8::10"
+  #       hostname: "nas"
+
+  # Kea Control Agent (REST API):
+  # ctrl_agent:
+  #   enabled: false
+  #   http_host: "127.0.0.1"
+  #   http_port: "8000"
+
+  # Kea Dynamic DNS (интеграция с BIND):
+  # ddns:
+  #   enabled: false
+  #   server_ip: "127.0.0.1"
+  #   server_port: "53001"
+
+# ==============================================================================
+# QEMU GUEST AGENT (MVC-плагин, //OPNsense/qemu_guest_agent)
+# Агент для гипервизора QEMU/KVM. Включать только в виртуальных машинах.
+# ==============================================================================
+qemu_guest_agent:
+  enabled: true
+  # log_debug: false                  # включить отладочный лог агента
+
+  # Отключить опасные RPC-вызовы (пусто = все разрешены):
+  # disabled_rpcs:
+  #   - guest-exec              # выполнение команд в гостевой системе
+  #   - guest-exec-status
+  #   - guest-file-open         # доступ к файловой системе
+  #   - guest-file-read
+  #   - guest-file-write
+  #   - guest-file-close
+  #   - guest-file-flush
+  #   - guest-file-seek
+  #   - guest-set-user-password # смена паролей
+  #   - guest-shutdown          # выключение/перезагрузка
+  #   - guest-suspend-disk
+  #   - guest-suspend-hybrid
+  #   - guest-suspend-ram
+  #   - guest-fsfreeze-freeze   # заморозка ФС для снапшота
+  #   - guest-fsfreeze-thaw
+
+# ==============================================================================
+# ACME CLIENT (MVC-плагин, //OPNsense/AcmeClient)
+# Автоматическое получение и обновление TLS-сертификатов (Let's Encrypt и др.).
+# Структура: settings → accounts → validations → certificates → actions.
+# ==============================================================================
+acme_client:
+  settings:
+    enabled: true
+    environment: prod                 # prod | stg (stg = staging / тестовый CA)
+    log_level: normal                 # normal | extended | debug | debug2 | debug3
+    # auto_renewal: true              # глобальное авто-обновление
+    # challenge_port: 43580           # порт для HTTP-01 challenge
+    # tls_challenge_port: 43581       # порт для TLS-ALPN-01 challenge
+    # restart_timeout: 600            # таймаут перезапуска (сек)
+
+  # ACME-аккаунты (регистрация у CA):
+  accounts:
+    - name: letsencrypt
+      email: admin@example.com
+      ca: letsencrypt                 # buypass | buypass_test | google | google_test |
+                                      # letsencrypt | letsencrypt_test | sslcom | zerossl | custom
+      # enabled: true
+      # description: ""
+      # custom_ca: ""                 # URL для ca: custom
+      # eab_kid: ""                   # External Account Binding (ZeroSSL и др.)
+      # eab_hmac: ""
+
+  # Методы проверки владения доменом:
+  validations:
+    - name: cloudflare-dns
+      method: dns01                   # http01 | dns01 | tlsalpn01
+      dns_service: dns_cf             # провайдер DNS (dns_cf, dns_aws, dns_gd, …)
+      dns_sleep: 30                   # ожидание после обновления DNS (сек)
+      dns_credentials:                # учётные данные для DNS API (зависят от провайдера)
+        dns_cf_token: "mytoken123"    # для Cloudflare — API Token
+      # enabled: true
+      # description: ""
+
+    # HTTP-01 challenge (порт 80):
+    # - name: http-challenge
+    #   method: http01
+    #   description: "HTTP validation"
+
+    # AWS Route53:
+    # - name: route53-dns
+    #   method: dns01
+    #   dns_service: dns_aws
+    #   dns_sleep: 30
+    #   dns_credentials:
+    #     dns_aws_access_key_id: "AKIAIOSFODNN7EXAMPLE"
+    #     dns_aws_secret_access_key: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+    #     dns_aws_region: "us-east-1"
+
+  # Сертификаты:
+  certificates:
+    - name: example.com
+      account: letsencrypt            # имя аккаунта выше
+      validation_method: cloudflare-dns   # имя validation выше
+      alt_names:                      # Subject Alternative Names
+        - www.example.com
+        - mail.example.com
+      key_length: key_4096            # key_2048 | key_3072 | key_4096 | key_ec256 | key_ec384
+      auto_renewal: true
+      renew_interval: 60              # обновлять за N дней до истечения
+      # enabled: true
+      # description: ""
+      # ocsp: false                   # OCSP stapling
+      # restart_actions: []           # имена actions для запуска после обновления
+      # aliasmode: none               # none | automatic | domain | challenge
+      # domain_alias: ""
+      # challenge_alias: ""
+
+  # Действия после обновления сертификата:
+  actions:
+    - name: restart-gui
+      type: configd_restart_gui       # тип действия (configd_restart_gui, configd_restart, …)
+      # enabled: true
+      # description: ""
+      # extra_params: {}              # дополнительные параметры (зависят от type)
+
+    # Перезапуск произвольного сервиса:
+    # - name: restart-haproxy
+    #   type: configd_restart
+    #   extra_params:
+    #     service: haproxy
+
+# ==============================================================================
+# BIND DNS SERVER (MVC-плагин, //OPNsense/bind)
+# Полноценный authoritative + recursive DNS сервер.
+# ACL-имена используются в recursion, allowtransfer, allowquery доменов.
+# ==============================================================================
+bind:
+  general:
+    enabled: true
+    port: 53530                       # порт (53530 чтобы не конфликтовать с Unbound)
+    forwarders:
+      - 8.8.8.8
+      - 1.1.1.1
+    dnssecvalidation: "no"            # "no" | "auto"
+    rndcsecret: "VxtIzJevSQXqnr7h2qerrcwjnZlMWSGGFBndKeNIDfw="  # ключ rndc (base64)
+    recursion:
+      - local_nets                    # ACL-имена которым разрешена рекурсия
+    # disablev6: false                # отключить IPv6
+    # enablerpz: true                 # включить Response Policy Zone
+    # listenv4: ["0.0.0.0"]           # IPv4-адреса для прослушивания
+    # listenv6: ["::"]                # IPv6-адреса для прослушивания
+    # filteraaaav4: false             # фильтровать AAAA-ответы для IPv4-клиентов
+    # maxcachesize: 80                # % RAM для кэша
+    # logsize: 5                      # размер лог-файла (MB)
+    # general_log_level: info         # crit | error | warn | notice | info | debug | dynamic
+    # allowtransfer: []               # ACL кому разрешена зонная передача
+    # allowquery: []                  # ACL кому разрешены запросы (пусто = all)
+    # hidehostname: false
+    # hideversion: false
+    # disableprefetch: false
+    # enableratelimiting: false
+    # ratelimitcount: null            # запросов/сек (null = без ограничений)
+    # ratelimitexcept: ["0.0.0.0", "::"]
+    # rndcalgo: hmac-sha256           # hmac-sha512 | hmac-sha384 | hmac-sha256 | …
+    # querysource: ""                 # исходящий IP для запросов
+    # transfersource: ""              # исходящий IP для зонных передач
+
+  # Списки контроля доступа:
+  acls:
+    - name: local_nets
+      networks:
+        - 192.168.0.0/24
+        - 10.0.0.0/8
+      # enabled: true
+
+    # - name: trusted_clients
+    #   networks:
+    #     - 192.168.1.0/24
+
+  # DNS-зоны:
+  domains:
+    - domainname: home.local
+      type: primary                   # primary | secondary | forward
+      ttl: 86400
+      allowquery:
+        - local_nets                  # ACL-имена
+      # enabled: true
+      # allowtransfer: []
+      # primaryip: []                 # IP primary серверов (для secondary зоны)
+      # forwardserver: []             # IP форвардинга (для forward зоны)
+      # serial: ""                    # номер серии (пусто = авто)
+      # refresh: 21600
+      # retry: 3600
+      # expire: 3542400
+      # negative: 3600
+      # mailadmin: "mail.opnsense.localdomain"
+      # dnsserver: "opnsense.localdomain"
+      # allowrndctransfer: false
+      # allowrndcupdate: true
+      # allownotifysecondary: []
+      # transferkeyalgo: ""
+      # transferkeyname: ""
+      # transferkey: ""
+
+  # DNS-записи:
+  records:
+    - domain: home.local
+      name: router
+      type: A                         # A | AAAA | CNAME | MX | NS | PTR | TXT | SRV | …
+      value: 192.168.0.1
+      # enabled: true
+
+    - domain: home.local
+      name: nas
+      type: A
+      value: 192.168.0.10
+
+    # AAAA:
+    # - domain: home.local
+    #   name: router
+    #   type: AAAA
+    #   value: "2001:db8::1"
+
+    # CNAME:
+    # - domain: home.local
+    #   name: www
+    #   type: CNAME
+    #   value: router.home.local.
+
+    # MX (value: "priority hostname"):
+    # - domain: home.local
+    #   name: ""
+    #   type: MX
+    #   value: "10 mail.home.local."
+
+    # TXT:
+    # - domain: home.local
+    #   name: ""
+    #   type: TXT
+    #   value: "v=spf1 mx -all"
+
+    # SRV (value: "priority weight port target"):
+    # - domain: home.local
+    #   name: _http._tcp
+    #   type: SRV
+    #   value: "10 10 80 router.home.local."
+
+  # DNS Blocklist (RPZ):
+  # dnsbl:
+  #   enabled: false
+  #   type: []                        # источники блокировок
+  #   whitelists: []                  # исключения
+  #   forcesafegoogle: false
+  #   forcesafeduckduckgo: false
+  #   forcesafeyoutube: false
+  #   forcestrictbing: false
+
+# ==============================================================================
+# CHRONY NTP (MVC-плагин, //OPNsense/chrony)
+# Современная замена ntpd. Рекомендуется для новых установок.
+# Секция ntpd (legacy) и chrony — независимы; используйте одну из них.
+# ==============================================================================
+chrony:
+  general:
+    enabled: true
+    peers:
+      - 0.opnsense.pool.ntp.org      # NTP-сервера и пулы
+      - 1.opnsense.pool.ntp.org
+      - 2.opnsense.pool.ntp.org
+      - 3.opnsense.pool.ntp.org
+    allowed_networks:                 # сети которым разрешено использовать этот сервер как NTP
+      - 192.168.1.0/24
+      # - 10.0.0.0/8
+    # port: 323                       # UDP-порт chrony (323 = стандарт)
+    # nts_client: false               # Network Time Security (NTS)
+    # ntsnocert: false                # разрешить NTS без проверки сертификата
+    # fallback_peers: ""              # запасные серверы (через пробел)
+
+# ==============================================================================
+# GIT BACKUP (legacy-секция, //system/backup/git)
+# Резервное копирование config.xml в Git-репозиторий после каждого изменения.
+# Поддерживает SSH-ключи и HTTPS (user/password).
+# ==============================================================================
+git_backup:
+  enabled: true
+  url: "ssh://git@github.com/user/opnsense-backup.git"
+  branch: main
+  user: git-backup                   # имя пользователя в коммитах
+  # force_push: false                # git push --force (перезапись истории)
+  # privkey: |                       # SSH private key (PEM, если аутентификация по ключу)
+  #   -----BEGIN OPENSSH PRIVATE KEY-----
+  #   ...
+  #   -----END OPENSSH PRIVATE KEY-----
+  # password: ""                     # пароль для HTTPS-репозитория

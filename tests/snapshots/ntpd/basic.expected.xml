@@ -1,0 +1,4 @@
+<ntpd>
+  <prefer>0.opnsense.pool.ntp.org</prefer>
+  <ispool>0.opnsense.pool.ntp.org 1.opnsense.pool.ntp.org 2.opnsense.pool.ntp.org</ispool>
+</ntpd>

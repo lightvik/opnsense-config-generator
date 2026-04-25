@@ -1,0 +1,47 @@
+<Kea>
+  <dhcp4>
+    <general>
+      <enabled>1</enabled>
+      <interfaces>lan</interfaces>
+      <valid_lifetime>4000</valid_lifetime>
+      <fwrules>1</fwrules>
+    </general>
+    <subnets>
+      <subnet4 uuid="ff803696-ef09-54b5-8460-a6f8c9d384cb">
+        <subnet>192.168.1.0/24</subnet>
+        <option_data_autocollect>1</option_data_autocollect>
+        <pools>192.168.1.100-192.168.1.200</pools>
+        <option_data>
+          <routers>192.168.1.1</routers>
+          <domain_name_servers>8.8.8.8,8.8.4.4</domain_name_servers>
+          <domain_name>home.local</domain_name>
+        </option_data>
+      </subnet4>
+    </subnets>
+    <reservations/>
+  </dhcp4>
+  <dhcp6>
+    <general>
+      <enabled>0</enabled>
+      <interfaces></interfaces>
+      <valid_lifetime>4000</valid_lifetime>
+      <fwrules>1</fwrules>
+    </general>
+    <subnets/>
+    <reservations/>
+  </dhcp6>
+  <ctrl_agent>
+    <general>
+      <enabled>0</enabled>
+      <http_host>127.0.0.1</http_host>
+      <http_port>8000</http_port>
+    </general>
+  </ctrl_agent>
+  <ddns>
+    <general>
+      <enabled>0</enabled>
+      <server_ip>127.0.0.1</server_ip>
+      <server_port>53001</server_port>
+    </general>
+  </ddns>
+</Kea>

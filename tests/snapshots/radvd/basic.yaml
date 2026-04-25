@@ -1,0 +1,16 @@
+entries:
+  - interface: lan
+    mode: stateless
+    rdnss:
+      - "2001:db8::1"
+    dnssl:
+      - "home.local"
+    adv_link_mtu: 1500
+    adv_valid_lifetime: 86400
+    adv_preferred_lifetime: 14400
+  - interface: opt1
+    mode: managed
+    enabled: false
+    max_rtr_adv_interval: 300
+    adv_default_preference: high
+    dns: false

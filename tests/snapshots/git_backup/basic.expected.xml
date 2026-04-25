@@ -1,0 +1,7 @@
+<git>
+  <enabled>1</enabled>
+  <url>ssh://git@github.com/user/opnsense-backup.git</url>
+  <branch>main</branch>
+  <force_push>0</force_push>
+  <user>git-backup</user>
+</git>

@@ -1,0 +1,47 @@
+<system>
+  <optimization>normal</optimization>
+  <hostname>fw01</hostname>
+  <domain>home.local</domain>
+  <dnsallowoverride>1</dnsallowoverride>
+  <dnsallowoverride_exclude/>
+  <dnsserver>8.8.8.8</dnsserver>
+  <group>
+    <name>admins</name>
+    <description>System Administrators</description>
+    <scope>system</scope>
+    <gid>1999</gid>
+    <member>0</member>
+    <priv>page-all</priv>
+  </group>
+  <user>
+    <name>root</name>
+    <descr>System Administrator</descr>
+    <scope>system</scope>
+    <groupname>admins</groupname>
+    <password>$2b$12$WOdCdKlHn7i/gzS2kVNGReGOX81B0RkkkX3AjCOMV9RKWXDlwagDm</password>
+    <uid>0</uid>
+    <shell>/bin/sh</shell>
+  </user>
+  <timezone>Europe/Moscow</timezone>
+  <timeservers>0.opnsense.pool.ntp.org 1.opnsense.pool.ntp.org 2.opnsense.pool.ntp.org 3.opnsense.pool.ntp.org</timeservers>
+  <webgui>
+    <protocol>https</protocol>
+  </webgui>
+  <ssh>
+    <group>admins</group>
+    <enabled>enabled</enabled>
+  </ssh>
+  <disablenatreflection>yes</disablenatreflection>
+  <usevirtualterminal>1</usevirtualterminal>
+  <ipv6allow>1</ipv6allow>
+  <powerd_ac_mode>hadp</powerd_ac_mode>
+  <powerd_battery_mode>hadp</powerd_battery_mode>
+  <powerd_normal_mode>hadp</powerd_normal_mode>
+  <bogons>
+    <interval>monthly</interval>
+  </bogons>
+  <pf_share_forward>1</pf_share_forward>
+  <lb_use_sticky>1</lb_use_sticky>
+  <rrdbackup>-1</rrdbackup>
+  <netflowbackup>-1</netflowbackup>
+</system>

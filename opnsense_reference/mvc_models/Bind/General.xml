@@ -1,0 +1,171 @@
+<model>
+    <mount>//OPNsense/bind/general</mount>
+    <description>BIND configuration</description>
+    <version>1.0.12</version>
+    <items>
+        <enabled type="BooleanField">
+            <Default>0</Default>
+            <Required>Y</Required>
+        </enabled>
+        <disablev6 type="BooleanField">
+            <Default>0</Default>
+            <Required>Y</Required>
+        </disablev6>
+        <enablerpz type="BooleanField">
+            <Default>1</Default>
+            <Required>Y</Required>
+        </enablerpz>
+        <listenv4 type="NetworkField">
+            <Default>0.0.0.0</Default>
+            <Required>Y</Required>
+            <AsList>Y</AsList>
+        </listenv4>
+        <listenv6 type="NetworkField">
+            <Default>::</Default>
+            <Required>Y</Required>
+            <AsList>Y</AsList>
+        </listenv6>
+        <querysource type="NetworkField">
+            <AddressFamily>ipv4</AddressFamily>
+            <NetMaskAllowed>N</NetMaskAllowed>
+        </querysource>
+        <querysourcev6 type="NetworkField">
+            <AddressFamily>ipv6</AddressFamily>
+            <NetMaskAllowed>N</NetMaskAllowed>
+        </querysourcev6>
+        <transfersource type="NetworkField">
+            <AddressFamily>ipv4</AddressFamily>
+            <NetMaskAllowed>N</NetMaskAllowed>
+        </transfersource>
+        <transfersourcev6 type="NetworkField">
+            <AddressFamily>ipv6</AddressFamily>
+            <NetMaskAllowed>N</NetMaskAllowed>
+        </transfersourcev6>
+        <port type="PortField">
+            <Default>53530</Default>
+            <Required>Y</Required>
+        </port>
+        <forwarders type="NetworkField">
+            <AsList>Y</AsList>
+        </forwarders>
+        <filteraaaav4 type="BooleanField">
+            <Default>0</Default>
+            <Required>Y</Required>
+        </filteraaaav4>
+        <filteraaaav6 type="BooleanField">
+            <Default>0</Default>
+            <Required>Y</Required>
+        </filteraaaav6>
+        <filteraaaaacl type="NetworkField">
+            <AsList>Y</AsList>
+        </filteraaaaacl>
+        <logsize type="IntegerField">
+            <Default>5</Default>
+            <Required>Y</Required>
+            <MinimumValue>1</MinimumValue>
+            <MaximumValue>1000</MaximumValue>
+            <ValidationMessage>Choose a value between 1 and 1000.</ValidationMessage>
+        </logsize>
+        <general_log_level type="OptionField">
+            <OptionValues>
+                <crit value="critical">Critical</crit>
+                <error value="error">Error</error>
+                <warn value="warning">Warning</warn>
+                <notice value="notice">Notice</notice>
+                <info value="info">Informational</info>
+                <debug value="debug">Debug</debug>
+                <dynamic value="dynamic">Dynamic</dynamic>
+            </OptionValues>
+            <Required>Y</Required>
+            <Default>info</Default>
+        </general_log_level>
+        <maxcachesize type="IntegerField">
+            <Default>80</Default>
+            <Required>Y</Required>
+            <MinimumValue>1</MinimumValue>
+            <MaximumValue>99</MaximumValue>
+            <ValidationMessage>Choose a value between 1 and 99.</ValidationMessage>
+        </maxcachesize>
+        <recursion type="ModelRelationField">
+            <Model>
+                <template>
+                    <source>OPNsense.Bind.Acl</source>
+                    <items>acls.acl</items>
+                    <display>name</display>
+                </template>
+            </Model>
+            <Multiple>Y</Multiple>
+            <ValidationMessage>Choose an ACL.</ValidationMessage>
+        </recursion>
+        <allowtransfer type="ModelRelationField">
+            <Model>
+                <template>
+                    <source>OPNsense.Bind.Acl</source>
+                    <items>acls.acl</items>
+                    <display>name</display>
+                </template>
+            </Model>
+            <Multiple>Y</Multiple>
+        </allowtransfer>
+        <allowquery type="ModelRelationField">
+            <Model>
+                <template>
+                    <source>OPNsense.Bind.Acl</source>
+                    <items>acls.acl</items>
+                    <display>name</display>
+                </template>
+            </Model>
+            <Multiple>Y</Multiple>
+        </allowquery>
+        <dnssecvalidation type="OptionField">
+            <OptionValues>
+                <no>No</no>
+                <auto>Auto</auto>
+            </OptionValues>
+            <Default>no</Default>
+            <Required>Y</Required>
+        </dnssecvalidation>
+        <hidehostname type="BooleanField">
+            <Default>0</Default>
+            <Required>Y</Required>
+        </hidehostname>
+        <hideversion type="BooleanField">
+            <Default>0</Default>
+            <Required>Y</Required>
+        </hideversion>
+        <disableprefetch type="BooleanField">
+            <Default>0</Default>
+            <Required>Y</Required>
+        </disableprefetch>
+        <enableratelimiting type="BooleanField">
+            <Default>0</Default>
+            <Required>Y</Required>
+        </enableratelimiting>
+        <ratelimitcount type="IntegerField">
+            <MinimumValue>1</MinimumValue>
+            <MaximumValue>1000</MaximumValue>
+            <ValidationMessage>Choose a value between 1 and 1000.</ValidationMessage>
+        </ratelimitcount>
+        <ratelimitexcept type="NetworkField">
+            <Default>0.0.0.0,::</Default>
+            <Required>Y</Required>
+            <AsList>Y</AsList>
+        </ratelimitexcept>
+        <rndcalgo type="OptionField">
+            <Required>Y</Required>
+            <Default>hmac-sha256</Default>
+            <OptionValues>
+                <hmac-sha512>HMAC-SHA512</hmac-sha512>
+                <hmac-sha384>HMAC-SHA384</hmac-sha384>
+                <hmac-sha256>HMAC-SHA256</hmac-sha256>
+                <hmac-sha224>HMAC-SHA224</hmac-sha224>
+                <hmac-sha1>HMAC-SHA1</hmac-sha1>
+                <hmac-md5>HMAC-MD5</hmac-md5>
+            </OptionValues>
+        </rndcalgo>
+        <rndcsecret type="Base64Field">
+            <Required>Y</Required>
+            <Default>VxtIzJevSQXqnr7h2qerrcwjnZlMWSGGFBndKeNIDfw=</Default>
+        </rndcsecret>
+    </items>
+</model>

@@ -1,0 +1,57 @@
+<Swanctl>
+  <Connections>
+    <Connection uuid="93dcff4b-7c80-563e-92a8-23781f225f92">
+      <enabled>1</enabled>
+      <proposals>default</proposals>
+      <unique>no</unique>
+      <aggressive>0</aggressive>
+      <version>2</version>
+      <mobike>1</mobike>
+      <remote_addrs>203.0.113.1</remote_addrs>
+      <encap>0</encap>
+      <pools></pools>
+      <send_certreq>1</send_certreq>
+      <description>Site-to-Site</description>
+    </Connection>
+  </Connections>
+  <locals>
+    <local uuid="902eb237-67a7-5491-b179-c65fc62905ad">
+      <enabled>1</enabled>
+      <connection>93dcff4b-7c80-563e-92a8-23781f225f92</connection>
+      <round>0</round>
+      <auth>psk</auth>
+      <id>@local.example.com</id>
+      <description></description>
+    </local>
+  </locals>
+  <remotes>
+    <remote uuid="cede44e6-14f2-5086-be32-404a6ab53329">
+      <enabled>1</enabled>
+      <connection>93dcff4b-7c80-563e-92a8-23781f225f92</connection>
+      <round>0</round>
+      <auth>psk</auth>
+      <id>@remote.example.com</id>
+      <description></description>
+    </remote>
+  </remotes>
+  <children>
+    <child uuid="4f265363-7b5d-5bdf-a1e6-9209c9c58e6b">
+      <enabled>1</enabled>
+      <connection>93dcff4b-7c80-563e-92a8-23781f225f92</connection>
+      <esp_proposals>default</esp_proposals>
+      <sha256_96>0</sha256_96>
+      <start_action>start</start_action>
+      <close_action>none</close_action>
+      <dpd_action>clear</dpd_action>
+      <mode>tunnel</mode>
+      <policies>1</policies>
+      <local_ts>192.168.1.0/24</local_ts>
+      <remote_ts>10.10.0.0/24</remote_ts>
+      <rekey_time>3600</rekey_time>
+      <description>LAN-to-Remote</description>
+    </child>
+  </children>
+  <Pools/>
+  <VTIs/>
+  <SPDs/>
+</Swanctl>

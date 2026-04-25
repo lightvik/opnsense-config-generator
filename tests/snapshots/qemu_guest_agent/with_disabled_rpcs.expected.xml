@@ -1,0 +1,7 @@
+<QemuGuestAgent>
+  <general>
+    <Enabled>1</Enabled>
+    <LogDebug>1</LogDebug>
+    <DisabledRPCs>guest-exec,guest-exec-status,guest-file-open</DisabledRPCs>
+  </general>
+</QemuGuestAgent>

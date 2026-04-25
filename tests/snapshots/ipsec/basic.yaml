@@ -1,0 +1,22 @@
+connections:
+  - description: "Site-to-Site"
+    remote_addrs: "203.0.113.1"
+    version: "2"
+    proposals: default
+locals:
+  - connection: "Site-to-Site"
+    auth: psk
+    id: "@local.example.com"
+remotes:
+  - connection: "Site-to-Site"
+    auth: psk
+    id: "@remote.example.com"
+children:
+  - connection: "Site-to-Site"
+    description: "LAN-to-Remote"
+    local_ts:
+      - "192.168.1.0/24"
+    remote_ts:
+      - "10.10.0.0/24"
+    esp_proposals: default
+    rekey_time: 3600

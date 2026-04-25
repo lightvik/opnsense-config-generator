@@ -1,0 +1,8 @@
+general:
+  enabled: true
+  peers:
+    - 0.opnsense.pool.ntp.org
+    - 1.opnsense.pool.ntp.org
+  allowed_networks:
+    - 192.168.0.0/24
+    - 10.0.0.0/8

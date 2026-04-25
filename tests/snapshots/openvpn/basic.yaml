@@ -1,0 +1,19 @@
+instances:
+  - enabled: true
+    description: "VPN Server"
+    role: server
+    proto: udp
+    port: "1194"
+    server: "10.8.0.0/24"
+    topology: subnet
+    ca: "abcd1234"
+    cert: "efgh5678"
+    verify_client_cert: require
+    data_ciphers:
+      - AES-256-GCM
+      - AES-128-GCM
+    push_route:
+      - "192.168.1.0/24"
+    keepalive_interval: 10
+    keepalive_timeout: 120
+    verb: "3"

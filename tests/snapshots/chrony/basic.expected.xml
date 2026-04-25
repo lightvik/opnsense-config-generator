@@ -1,0 +1,10 @@
+<chrony>
+  <general>
+    <enabled>1</enabled>
+    <port>323</port>
+    <ntsclient>0</ntsclient>
+    <ntsnocert>0</ntsnocert>
+    <peers>0.opnsense.pool.ntp.org,1.opnsense.pool.ntp.org</peers>
+    <allowednetworks>192.168.0.0/24,10.0.0.0/8</allowednetworks>
+  </general>
+</chrony>

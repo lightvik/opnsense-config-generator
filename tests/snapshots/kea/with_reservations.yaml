@@ -1,0 +1,19 @@
+dhcp4:
+  enabled: true
+  interfaces: [lan]
+  subnets:
+    - subnet: "192.168.1.0/24"
+      pools: ["192.168.1.100-192.168.1.200"]
+      option_data:
+        routers: "192.168.1.1"
+        domain_name_servers: ["192.168.1.1"]
+        domain_name: "home.local"
+  reservations:
+    - subnet: "192.168.1.0/24"
+      hw_address: "aa:bb:cc:dd:ee:01"
+      ip_address: "192.168.1.10"
+      hostname: "server"
+    - subnet: "192.168.1.0/24"
+      hw_address: "aa:bb:cc:dd:ee:02"
+      ip_address: "192.168.1.11"
+      hostname: "printer"

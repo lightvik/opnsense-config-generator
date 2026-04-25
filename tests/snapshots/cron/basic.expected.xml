@@ -1,0 +1,29 @@
+<cron>
+  <jobs>
+    <job uuid="f80d536e-3ad3-5599-97ca-d30f8edfffe0">
+      <origin>cron</origin>
+      <enabled>1</enabled>
+      <minutes>0</minutes>
+      <hours>4</hours>
+      <days>*</days>
+      <months>*</months>
+      <weekdays>*</weekdays>
+      <who>root</who>
+      <command>firmware update</command>
+      <description>Daily firmware update check</description>
+    </job>
+    <job uuid="51824ef2-dead-5ff9-b945-5278a6773ee6">
+      <origin>cron</origin>
+      <enabled>0</enabled>
+      <minutes>30</minutes>
+      <hours>3</hours>
+      <days>1</days>
+      <months>*</months>
+      <weekdays>*</weekdays>
+      <who>root</who>
+      <command>firmware changelog</command>
+      <parameters>verbose</parameters>
+      <description>Monthly changelog fetch</description>
+    </job>
+  </jobs>
+</cron>

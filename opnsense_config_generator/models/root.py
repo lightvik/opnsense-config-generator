@@ -1,0 +1,61 @@
+from pydantic import BaseModel, Field
+
+from opnsense_config_generator.models.aliases import AliasesConfig
+from opnsense_config_generator.models.bridges import BridgesConfig
+from opnsense_config_generator.models.certs import CertsConfig
+from opnsense_config_generator.models.dnsmasq import DnsmasqConfig
+from opnsense_config_generator.models.filter import FilterConfig
+from opnsense_config_generator.models.gateways import GatewaysConfig
+from opnsense_config_generator.models.interfaces import InterfacesConfig
+from opnsense_config_generator.models.ipsec import IpsecConfig
+from opnsense_config_generator.models.laggs import LaggsConfig
+from opnsense_config_generator.models.nat import NatConfig
+from opnsense_config_generator.models.ntpd import NtpdConfig
+from opnsense_config_generator.models.openvpn import OpenVpnConfig
+from opnsense_config_generator.models.routes import RoutesConfig
+from opnsense_config_generator.models.syslog import SyslogConfig
+from opnsense_config_generator.models.system import SystemConfig
+from opnsense_config_generator.models.unbound import UnboundConfig
+from opnsense_config_generator.models.vlans import VlansConfig
+from opnsense_config_generator.models.cron import CronConfig
+from opnsense_config_generator.models.monit import MonitConfig
+from opnsense_config_generator.models.radvd import RadvdConfig
+from opnsense_config_generator.models.trafficshaper import TrafficShaperConfig
+from opnsense_config_generator.models.acme_client import AcmeClientConfig
+from opnsense_config_generator.models.bind import BindConfig
+from opnsense_config_generator.models.chrony import ChronyConfig
+from opnsense_config_generator.models.git_backup import GitBackupConfig
+from opnsense_config_generator.models.kea import KeaConfig
+from opnsense_config_generator.models.qemu_guest_agent import QemuGuestAgentConfig
+from opnsense_config_generator.models.wireguard import WireguardConfig
+
+
+class OpnSenseConfig(BaseModel):
+    system: SystemConfig = Field(default_factory=SystemConfig)
+    interfaces: InterfacesConfig = Field(default_factory=InterfacesConfig)
+    certs: CertsConfig = Field(default_factory=CertsConfig)
+    vlans: VlansConfig = Field(default_factory=VlansConfig)
+    bridges: BridgesConfig = Field(default_factory=BridgesConfig)
+    laggs: LaggsConfig = Field(default_factory=LaggsConfig)
+    gateways: GatewaysConfig = Field(default_factory=GatewaysConfig)
+    staticroutes: RoutesConfig = Field(default_factory=RoutesConfig)
+    aliases: AliasesConfig = Field(default_factory=AliasesConfig)
+    filter: FilterConfig = Field(default_factory=FilterConfig)
+    nat: NatConfig = Field(default_factory=NatConfig)
+    dnsmasq: DnsmasqConfig = Field(default_factory=DnsmasqConfig)
+    unbound: UnboundConfig = Field(default_factory=UnboundConfig)
+    ntpd: NtpdConfig = Field(default_factory=NtpdConfig)
+    wireguard: WireguardConfig = Field(default_factory=WireguardConfig)
+    openvpn: OpenVpnConfig = Field(default_factory=OpenVpnConfig)
+    ipsec: IpsecConfig = Field(default_factory=IpsecConfig)
+    syslog: SyslogConfig = Field(default_factory=SyslogConfig)
+    cron: CronConfig = Field(default_factory=CronConfig)
+    monit: MonitConfig = Field(default_factory=MonitConfig)
+    trafficshaper: TrafficShaperConfig = Field(default_factory=TrafficShaperConfig)
+    radvd: RadvdConfig = Field(default_factory=RadvdConfig)
+    kea: KeaConfig = Field(default_factory=KeaConfig)
+    qemu_guest_agent: QemuGuestAgentConfig = Field(default_factory=QemuGuestAgentConfig)
+    acme_client: AcmeClientConfig = Field(default_factory=AcmeClientConfig)
+    bind: BindConfig = Field(default_factory=BindConfig)
+    chrony: ChronyConfig = Field(default_factory=ChronyConfig)
+    git_backup: GitBackupConfig = Field(default_factory=GitBackupConfig)

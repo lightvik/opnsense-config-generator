@@ -1,0 +1,11 @@
+dhcp4:
+  enabled: true
+  interfaces: [lan]
+  valid_lifetime: 4000
+  subnets:
+    - subnet: "192.168.1.0/24"
+      pools: ["192.168.1.100-192.168.1.200"]
+      option_data:
+        routers: "192.168.1.1"
+        domain_name_servers: ["8.8.8.8", "8.8.4.4"]
+        domain_name: "home.local"

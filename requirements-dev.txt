@@ -1,0 +1,6 @@
+-r requirements.txt
+ruff>=0.4
+mypy>=1.10
+pytest>=8.0
+lxml-stubs>=0.5
+types-pyyaml>=6.0

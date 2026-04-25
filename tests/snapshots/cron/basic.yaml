@@ -1,0 +1,22 @@
+jobs:
+  - origin: cron
+    enabled: true
+    minutes: "0"
+    hours: "4"
+    days: "*"
+    months: "*"
+    weekdays: "*"
+    who: root
+    command: "firmware update"
+    description: "Daily firmware update check"
+  - origin: cron
+    enabled: false
+    minutes: "30"
+    hours: "3"
+    days: "1"
+    months: "*"
+    weekdays: "*"
+    who: root
+    command: "firmware changelog"
+    parameters: "verbose"
+    description: "Monthly changelog fetch"

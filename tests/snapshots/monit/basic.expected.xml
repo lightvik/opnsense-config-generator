@@ -1,0 +1,69 @@
+<monit>
+  <general>
+    <enabled>1</enabled>
+    <interval>60</interval>
+    <startdelay>30</startdelay>
+    <mailserver>smtp.example.com</mailserver>
+    <port>587</port>
+    <username>monit@example.com</username>
+    <password>secret</password>
+    <ssl>1</ssl>
+    <sslversion>tlsv12</sslversion>
+    <sslverify>1</sslverify>
+    <logfile>syslog facility log_daemon</logfile>
+    <httpdEnabled>1</httpdEnabled>
+    <httpdUsername>admin</httpdUsername>
+    <httpdPassword>adminpass</httpdPassword>
+    <httpdPort>2812</httpdPort>
+    <httpdAllow>localhost,192.168.1.0/24</httpdAllow>
+    <mmonitTimeout>5</mmonitTimeout>
+    <mmonitRegisterCredentials>1</mmonitRegisterCredentials>
+  </general>
+  <alert uuid="bd6b5619-96ce-58aa-9796-13d78a45ce7e">
+    <enabled>1</enabled>
+    <recipient>admin@example.com</recipient>
+    <noton>0</noton>
+    <events>connection,timeout,nonexist</events>
+    <description>Admin alert</description>
+  </alert>
+  <test uuid="76fc0583-b70e-5b79-bc6b-21d868ee824c">
+    <name>CPU check</name>
+    <type>SystemResource</type>
+    <condition>cpu &gt; 80% for 5 cycles</condition>
+    <action>alert</action>
+  </test>
+  <test uuid="dd7abc0e-fa81-55d2-90b0-a669b4566b1d">
+    <name>Memory check</name>
+    <type>SystemResource</type>
+    <condition>memory usage &gt; 90%</condition>
+    <action>alert</action>
+  </test>
+  <test uuid="366d0862-25a7-57ed-a7e7-7b6158c2bded">
+    <name>Nginx connection</name>
+    <type>Connection</type>
+    <condition>failed port 80 protocol http</condition>
+    <action>restart</action>
+  </test>
+  <service uuid="06bc95d6-5374-5e49-976f-24a91865e615">
+    <enabled>1</enabled>
+    <name>system</name>
+    <description>System resource monitoring</description>
+    <type>system</type>
+    <timeout>300</timeout>
+    <starttimeout>30</starttimeout>
+    <tests>76fc0583-b70e-5b79-bc6b-21d868ee824c,dd7abc0e-fa81-55d2-90b0-a669b4566b1d</tests>
+  </service>
+  <service uuid="d1815681-eaed-50e4-af87-e948e0ce6576">
+    <enabled>1</enabled>
+    <name>nginx</name>
+    <description>Nginx web server</description>
+    <type>process</type>
+    <pidfile>/var/run/nginx.pid</pidfile>
+    <timeout>300</timeout>
+    <starttimeout>30</starttimeout>
+    <start>/usr/sbin/service nginx start</start>
+    <stop>/usr/sbin/service nginx stop</stop>
+    <tests>366d0862-25a7-57ed-a7e7-7b6158c2bded</tests>
+    <depends>06bc95d6-5374-5e49-976f-24a91865e615</depends>
+  </service>
+</monit>

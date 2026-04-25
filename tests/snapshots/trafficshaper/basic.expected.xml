@@ -1,0 +1,81 @@
+<TrafficShaper>
+  <pipes>
+    <pipe uuid="bae5e0ce-2a81-5df8-8fe2-01c81b4f32e9">
+      <number>1</number>
+      <enabled>1</enabled>
+      <bandwidth>100</bandwidth>
+      <bandwidthMetric>Mbit</bandwidthMetric>
+      <mask>none</mask>
+      <codel_enable>0</codel_enable>
+      <codel_ecn_enable>0</codel_ecn_enable>
+      <pie_enable>0</pie_enable>
+      <description>WAN Download</description>
+    </pipe>
+    <pipe uuid="753f9ed1-430a-56db-a179-b27da35c472e">
+      <number>2</number>
+      <enabled>1</enabled>
+      <bandwidth>20</bandwidth>
+      <bandwidthMetric>Mbit</bandwidthMetric>
+      <mask>none</mask>
+      <codel_enable>0</codel_enable>
+      <codel_ecn_enable>0</codel_ecn_enable>
+      <pie_enable>0</pie_enable>
+      <description>WAN Upload</description>
+    </pipe>
+  </pipes>
+  <queues>
+    <queue uuid="88b9721e-b1c6-58a3-8382-3361a7fff973">
+      <number>1</number>
+      <enabled>1</enabled>
+      <pipe>bae5e0ce-2a81-5df8-8fe2-01c81b4f32e9</pipe>
+      <weight>70</weight>
+      <mask>none</mask>
+      <codel_enable>0</codel_enable>
+      <codel_ecn_enable>0</codel_ecn_enable>
+      <pie_enable>0</pie_enable>
+      <description>WAN High Priority</description>
+    </queue>
+    <queue uuid="c2152092-a5ae-5d0d-8291-e871063d730f">
+      <number>2</number>
+      <enabled>1</enabled>
+      <pipe>bae5e0ce-2a81-5df8-8fe2-01c81b4f32e9</pipe>
+      <weight>30</weight>
+      <mask>none</mask>
+      <codel_enable>0</codel_enable>
+      <codel_ecn_enable>0</codel_ecn_enable>
+      <pie_enable>0</pie_enable>
+      <description>WAN Low Priority</description>
+    </queue>
+  </queues>
+  <rules>
+    <rule uuid="2ce06de5-2a45-59db-91d8-ccc292c8c33c">
+      <enabled>1</enabled>
+      <sequence>1</sequence>
+      <interface>wan</interface>
+      <proto>tcp</proto>
+      <source>any</source>
+      <source_not>0</source_not>
+      <src_port>any</src_port>
+      <destination>any</destination>
+      <destination_not>0</destination_not>
+      <dst_port>80,443</dst_port>
+      <direction>in</direction>
+      <target>88b9721e-b1c6-58a3-8382-3361a7fff973</target>
+      <description>Prioritize web traffic</description>
+    </rule>
+    <rule uuid="18db6c02-f51f-577e-9c1c-763db11f873f">
+      <enabled>1</enabled>
+      <sequence>100</sequence>
+      <interface>wan</interface>
+      <proto>ip</proto>
+      <source>any</source>
+      <source_not>0</source_not>
+      <src_port>any</src_port>
+      <destination>any</destination>
+      <destination_not>0</destination_not>
+      <dst_port>any</dst_port>
+      <target>bae5e0ce-2a81-5df8-8fe2-01c81b4f32e9</target>
+      <description>Default WAN shaping</description>
+    </rule>
+  </rules>
+</TrafficShaper>

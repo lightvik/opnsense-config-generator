@@ -1,0 +1,16 @@
+interfaces:
+  wan:
+    if: vtnet0
+    ipaddr: dhcp
+    ipaddrv6: dhcp6
+    blockpriv: true
+    blockbogons: true
+    dhcp6-ia-pd-len: 0
+  lan:
+    if: vtnet1
+    ipaddr: 192.168.1.1
+    subnet: "24"
+    ipaddrv6: idassoc6
+    subnetv6: "64"
+    track6-interface: wan
+    track6-prefix-id: 0

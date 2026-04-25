@@ -1,0 +1,8 @@
+servers:
+  - address: 0.opnsense.pool.ntp.org
+    pool: true
+    prefer: true
+  - address: 1.opnsense.pool.ntp.org
+    pool: true
+  - address: 2.opnsense.pool.ntp.org
+    pool: true

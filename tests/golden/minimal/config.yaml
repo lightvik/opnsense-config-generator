@@ -1,0 +1,87 @@
+system:
+  hostname: fw01
+  domain: home.local
+  timezone: Europe/Moscow
+  dnsserver:
+    - 8.8.8.8
+    - 8.8.4.4
+  users:
+    - name: root
+      password: "opnsense"
+      descr: System Administrator
+      scope: system
+      groupname: admins
+      uid: 0
+      shell: /bin/sh
+  groups:
+    - name: admins
+      description: System Administrators
+      scope: system
+      gid: 1999
+      members: [0]
+      priv: [page-all]
+  webgui:
+    protocol: https
+  ssh:
+    enabled: true
+    group: admins
+
+interfaces:
+  interfaces:
+    wan:
+      if: vtnet0
+      ipaddr: dhcp
+      ipaddrv6: dhcp6
+      blockpriv: true
+      blockbogons: true
+      dhcp6-ia-pd-len: 0
+    lan:
+      if: vtnet1
+      ipaddr: 192.168.1.1
+      subnet: "24"
+      ipaddrv6: idassoc6
+      subnetv6: "64"
+      track6-interface: wan
+      track6-prefix-id: 0
+
+unbound:
+  enable: true
+  dnssec: true
+
+nat:
+  outbound_mode: automatic
+
+filter:
+  rules:
+    - type: pass
+      ipprotocol: inet
+      interface: lan
+      descr: Default allow LAN to any rule
+      source:
+        network: lan
+      destination:
+        any: true
+    - type: pass
+      ipprotocol: inet6
+      interface: lan
+      descr: Default allow LAN IPv6 to any rule
+      source:
+        network: lan
+      destination:
+        any: true
+
+dnsmasq:
+  enable: true
+  port: "53053"
+  interface: lan
+  dhcp:
+    enable_ra: true
+  dhcp_ranges:
+    - interface: lan
+      start_addr: 192.168.1.100
+      end_addr: 192.168.1.199
+    - interface: lan
+      start_addr: "::1000"
+      end_addr: "::2000"
+      constructor: lan
+      ra_mode: slaac

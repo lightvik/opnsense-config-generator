@@ -1,0 +1,17 @@
+rules:
+  - type: pass
+    ipprotocol: inet
+    interface: lan
+    descr: Default allow LAN to any rule
+    source:
+      network: lan
+    destination:
+      any: true
+  - type: pass
+    ipprotocol: inet6
+    interface: lan
+    descr: Default allow LAN IPv6 to any rule
+    source:
+      network: lan
+    destination:
+      any: true

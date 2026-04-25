@@ -1,0 +1,34 @@
+<wireguard>
+  <general>
+    <enabled>1</enabled>
+  </general>
+  <server>
+    <servers>
+      <server uuid="26a1be3c-9b48-5dc9-a787-d37eb4350535">
+        <enabled>1</enabled>
+        <name>wg0</name>
+        <instance>0</instance>
+        <pubkey>cHVibGlja2V5aGVyZTEyMzQ1Njc4OTBhYmNkZWZnaA==</pubkey>
+        <privkey>cHJpdmF0ZWtleWhlcmUxMjM0NTY3ODkwYWJjZGVmZ2g=</privkey>
+        <port>51820</port>
+        <tunneladdress>10.0.0.1/24</tunneladdress>
+        <disableroutes>0</disableroutes>
+        <peers>dcc134e5-fd4a-5af4-93aa-03ae4931ea05</peers>
+        <debug>0</debug>
+      </server>
+    </servers>
+  </server>
+  <client>
+    <clients>
+      <client uuid="dcc134e5-fd4a-5af4-93aa-03ae4931ea05">
+        <enabled>1</enabled>
+        <name>peer1</name>
+        <pubkey>cGVlcnB1YmtleWhlcmUxMjM0NTY3ODkwYWJjZGVm</pubkey>
+        <tunneladdress>10.0.0.2/32</tunneladdress>
+        <serveraddress>vpn.example.com</serveraddress>
+        <serverport>51820</serverport>
+        <keepalive>25</keepalive>
+      </client>
+    </clients>
+  </client>
+</wireguard>

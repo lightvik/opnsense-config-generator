@@ -1,0 +1,32 @@
+settings:
+  enabled: true
+  environment: prod
+  log_level: normal
+
+accounts:
+  - name: letsencrypt
+    email: admin@example.com
+    ca: letsencrypt
+
+validations:
+  - name: cloudflare-dns
+    method: dns01
+    dns_service: dns_cf
+    dns_sleep: 30
+    dns_credentials:
+      dns_cf_token: "mytoken123"
+
+certificates:
+  - name: example.com
+    account: letsencrypt
+    validation_method: cloudflare-dns
+    alt_names:
+      - www.example.com
+      - mail.example.com
+    key_length: key_4096
+    auto_renewal: true
+    renew_interval: 60
+
+actions:
+  - name: restart-gui
+    type: configd_restart_gui
