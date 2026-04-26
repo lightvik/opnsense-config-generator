@@ -21,3 +21,4 @@ venv/
 secrets.yaml
 context/
 config.yaml.j2
+.python-version
