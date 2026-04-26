@@ -8,7 +8,7 @@ import urllib.request
 from pathlib import Path
 
 REFERENCE_DIR = Path(__file__).parent.parent / "opnsense_reference"
-API_URL = "https://api.github.com/repos/opnsense/core/releases?per_page=20"
+API_URL = "https://api.github.com/repos/opnsense/core/tags?per_page=20"
 
 
 def get_current_version() -> str:
@@ -40,18 +40,14 @@ def get_latest_stable() -> str | None:
         print(f"Unexpected API response: {raw[:500].decode(errors='replace')}", file=sys.stderr)
         return None
 
-    print(f"Got {len(releases)} releases from API", file=sys.stderr)
+    print(f"Got {len(releases)} tags from API", file=sys.stderr)
     for rel in releases:
-        tag = rel.get("tag_name", "")
-        prerelease = rel.get("prerelease", False)
-        draft = rel.get("draft", False)
-        print(f"  tag={tag!r} prerelease={prerelease} draft={draft}", file=sys.stderr)
-        if prerelease or draft:
-            continue
-        # OPNsense stable tags look like "26.1.6" or "v26.1.6"
+        tag = rel.get("name", "")
+        print(f"  tag={tag!r}", file=sys.stderr)
+        # OPNsense stable tags look like "26.1.6"; skip RC/beta (contain letters)
         version = tag.lstrip("v")
         parts = version.split(".")
-        if len(parts) >= 2:
+        if len(parts) >= 2 and version.replace(".", "").isdigit():
             return version
     return None
 
