@@ -7,9 +7,7 @@
 
 ## Версионирование
 
-Тег релиза содержит обе версии: `opnsense-{OPNSENSE_VERSION}_v{TOOL_VERSION}`.
-
-Текущий тег: `opnsense-26.1.6_v0.0.2`
+Тег релиза содержит обе версии: `opnsense-{OPNSENSE_VERSION}_{TOOL_VERSION}`.
 
 - При обновлении до новой версии OPNsense — обновляется `OPNSENSE_VERSION` в `version.py` и создаётся новый тег.
 - При изменениях только в инструменте — инкрементируется `TOOL_VERSION`, `OPNSENSE_VERSION` не меняется.
@@ -27,27 +25,20 @@ config.yaml.j2  →  (Jinja2 render)  →  build/config.yaml  →  (XML builder)
 
 ## Использование
 
-### Docker (рекомендуется)
+### Docker (Ожидаемый способ использования)
 
 ```bash
-docker run --rm --volume "$(pwd):/work" ghcr.io/lightvik/opnsense-config-generator
+docker run --rm --volume "$(pwd):/work" ghcr.io/lightvik/opnsense-config-generator:opnsense-26.1.6_1.0.0
 ```
 
 С явными путями:
 
 ```bash
-docker run --rm --volume "$(pwd):/work" ghcr.io/lightvik/opnsense-config-generator render \
+docker run --rm --volume "$(pwd):/work" ghcr.io/lightvik/opnsense-config-generator:opnsense-26.1.6_1.0.0 render \
     --template config.yaml.j2 \
     --intermediate build/config.yaml \
     --output build/config.xml
 ```
-
-Конкретная версия:
-
-```bash
-docker run --rm --volume "$(pwd):/work" ghcr.io/lightvik/opnsense-config-generator:opnsense-26.1.6_v0.0.2
-```
-
 ### Локально
 
 Требуется **Python 3.12+**.
