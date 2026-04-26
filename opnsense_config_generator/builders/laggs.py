@@ -9,13 +9,13 @@ def build_laggs(cfg: LaggsConfig) -> etree._Element | None:
         return None
     laggs = etree.Element("laggs")
     for lagg in cfg.laggs:
-        l = etree.SubElement(laggs, "lagg")
-        sub(l, "laggif", lagg.laggif)
-        sub(l, "proto", lagg.proto)
+        el = etree.SubElement(laggs, "lagg")
+        sub(el, "laggif", lagg.laggif)
+        sub(el, "proto", lagg.proto)
         for member in lagg.members:
-            sub(l, "members", member)
+            sub(el, "members", member)
         for port in lagg.laggport:
-            sub(l, "laggport", port)
+            sub(el, "laggport", port)
         if lagg.descr:
-            sub(l, "descr", lagg.descr)
+            sub(el, "descr", lagg.descr)
     return laggs

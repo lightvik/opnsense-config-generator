@@ -1,24 +1,38 @@
 import pytest
 from pydantic import ValidationError
 
-from opnsense_config_generator.models.acme_client import AcmeClientConfig, AcmeCertificate, AcmeValidation
-from opnsense_config_generator.models.aliases import Alias, AliasesConfig
+from opnsense_config_generator.models.acme_client import (
+    AcmeClientConfig,
+    AcmeCertificate,
+    AcmeValidation,
+)
+from opnsense_config_generator.models.aliases import Alias
 from opnsense_config_generator.models.bind import BindAcl, BindConfig, BindRecord
 from opnsense_config_generator.models.chrony import ChronyConfig
 from opnsense_config_generator.models.cron import CronConfig, CronJob
-from opnsense_config_generator.models.git_backup import GitBackupConfig
-from opnsense_config_generator.models.monit import MonitConfig, MonitGeneral, MonitService, MonitTest
-from opnsense_config_generator.models.radvd import RadvdConfig, RadvdEntry
-from opnsense_config_generator.models.trafficshaper import ShaperPipe, ShaperQueue, ShaperRule, TrafficShaperConfig
 from opnsense_config_generator.models.dnsmasq import DnsmasqConfig, DnsmasqDhcpRange
-from opnsense_config_generator.models.filter import FilterConfig, FilterRule, RuleAddress
-from opnsense_config_generator.models.gateways import Gateway, GatewaysConfig
-from opnsense_config_generator.models.interfaces import InterfaceConfig, InterfacesConfig
+from opnsense_config_generator.models.filter import FilterRule
+from opnsense_config_generator.models.gateways import Gateway
+from opnsense_config_generator.models.git_backup import GitBackupConfig
+from opnsense_config_generator.models.interfaces import InterfaceConfig
 from opnsense_config_generator.models.kea import KeaConfig, KeaDhcpv4Config, KeaSubnet4
+from opnsense_config_generator.models.monit import (
+    MonitConfig,
+    MonitGeneral,
+    MonitService,
+    MonitTest,
+)
 from opnsense_config_generator.models.qemu_guest_agent import QemuGuestAgentConfig
+from opnsense_config_generator.models.radvd import RadvdConfig, RadvdEntry
 from opnsense_config_generator.models.root import OpnSenseConfig
 from opnsense_config_generator.models.system import Group, SystemConfig, User
-from opnsense_config_generator.models.vlans import Vlan, VlansConfig
+from opnsense_config_generator.models.trafficshaper import (
+    ShaperPipe,
+    ShaperQueue,
+    ShaperRule,
+    TrafficShaperConfig,
+)
+from opnsense_config_generator.models.vlans import Vlan
 
 
 def test_root_defaults() -> None:
@@ -269,8 +283,9 @@ def test_radvd_entry_invalid_preference() -> None:
 
 
 def test_full_minimal_parse() -> None:
-    import yaml
     from pathlib import Path
+
+    import yaml
     data = yaml.safe_load((Path(__file__).parent.parent / "golden/minimal/config.yaml").read_text())
     cfg = OpnSenseConfig.model_validate(data)
     assert cfg.system.hostname == "fw01"

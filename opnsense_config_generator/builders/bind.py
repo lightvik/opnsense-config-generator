@@ -56,10 +56,8 @@ def _build_domain(parent: etree._Element, domain: BindDomain) -> None:
 
 
 def _build_record(parent: etree._Element, record: BindRecord) -> None:
-    el = etree.SubElement(
-        parent, "record",
-        uuid=make_uuid("bind:record", f"{record.domain}:{record.name}:{record.type}:{record.value}"),
-    )
+    record_key = f"{record.domain}:{record.name}:{record.type}:{record.value}"
+    el = etree.SubElement(parent, "record", uuid=make_uuid("bind:record", record_key))
     sub(el, "enabled", bool_val(record.enabled))
     sub(el, "domain", _domain_uuid(record.domain))
     sub(el, "name", record.name)

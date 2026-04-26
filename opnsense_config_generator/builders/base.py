@@ -11,9 +11,6 @@ def append_if(parent: etree._Element, tag: str, value: str | int | bool | None) 
     """Append element only when value is non-empty / non-None."""
     if value is None:
         return
-    if isinstance(value, bool):
-        text = bool_val(value)
-    else:
-        text = str(value)
+    text = bool_val(value) if isinstance(value, bool) else str(value)
     if text:
         sub(parent, tag, text)

@@ -14,7 +14,7 @@ def _make_env(template_dir: Path) -> Environment:
     )
     jinja_env.globals["env"] = os.environ
 
-    def load_yaml(path: str) -> Any:
+    def load_yaml(path: str) -> Any:  # noqa: ANN401
         return yaml.safe_load(Path(path).read_text())
 
     jinja_env.globals["load_yaml"] = load_yaml

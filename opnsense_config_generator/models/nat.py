@@ -34,7 +34,9 @@ class PortForward(BaseModel):
     descr: str = ""
     disabled: bool = False
     nordr: bool = False
-    associated_rule_id: str = Field(default="add associated filter rule", alias="associated-rule-id")
+    associated_rule_id: str = Field(
+        default="add associated filter rule", alias="associated-rule-id"
+    )
 
     model_config = {"populate_by_name": True}
 

@@ -1,5 +1,6 @@
-from opnsense_config_generator.uuid_utils import NAMESPACE, make_uuid
 import uuid
+
+from opnsense_config_generator.uuid_utils import NAMESPACE, make_uuid
 
 
 def test_make_uuid_is_deterministic() -> None:

@@ -1,7 +1,11 @@
 from lxml import etree
 
 from opnsense_config_generator.builders.base import bool_val
-from opnsense_config_generator.models.openvpn import OpenVpnConfig, OpenVpnInstance, OpenVpnStaticKey
+from opnsense_config_generator.models.openvpn import (
+    OpenVpnConfig,
+    OpenVpnInstance,
+    OpenVpnStaticKey,
+)
 from opnsense_config_generator.uuid_utils import make_uuid
 from opnsense_config_generator.xml_utils import sub
 

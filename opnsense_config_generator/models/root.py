@@ -1,32 +1,32 @@
 from pydantic import BaseModel, Field
 
+from opnsense_config_generator.models.acme_client import AcmeClientConfig
 from opnsense_config_generator.models.aliases import AliasesConfig
+from opnsense_config_generator.models.bind import BindConfig
 from opnsense_config_generator.models.bridges import BridgesConfig
 from opnsense_config_generator.models.certs import CertsConfig
+from opnsense_config_generator.models.chrony import ChronyConfig
+from opnsense_config_generator.models.cron import CronConfig
 from opnsense_config_generator.models.dnsmasq import DnsmasqConfig
 from opnsense_config_generator.models.filter import FilterConfig
 from opnsense_config_generator.models.gateways import GatewaysConfig
+from opnsense_config_generator.models.git_backup import GitBackupConfig
 from opnsense_config_generator.models.interfaces import InterfacesConfig
 from opnsense_config_generator.models.ipsec import IpsecConfig
+from opnsense_config_generator.models.kea import KeaConfig
 from opnsense_config_generator.models.laggs import LaggsConfig
+from opnsense_config_generator.models.monit import MonitConfig
 from opnsense_config_generator.models.nat import NatConfig
 from opnsense_config_generator.models.ntpd import NtpdConfig
 from opnsense_config_generator.models.openvpn import OpenVpnConfig
+from opnsense_config_generator.models.qemu_guest_agent import QemuGuestAgentConfig
+from opnsense_config_generator.models.radvd import RadvdConfig
 from opnsense_config_generator.models.routes import RoutesConfig
 from opnsense_config_generator.models.syslog import SyslogConfig
 from opnsense_config_generator.models.system import SystemConfig
+from opnsense_config_generator.models.trafficshaper import TrafficShaperConfig
 from opnsense_config_generator.models.unbound import UnboundConfig
 from opnsense_config_generator.models.vlans import VlansConfig
-from opnsense_config_generator.models.cron import CronConfig
-from opnsense_config_generator.models.monit import MonitConfig
-from opnsense_config_generator.models.radvd import RadvdConfig
-from opnsense_config_generator.models.trafficshaper import TrafficShaperConfig
-from opnsense_config_generator.models.acme_client import AcmeClientConfig
-from opnsense_config_generator.models.bind import BindConfig
-from opnsense_config_generator.models.chrony import ChronyConfig
-from opnsense_config_generator.models.git_backup import GitBackupConfig
-from opnsense_config_generator.models.kea import KeaConfig
-from opnsense_config_generator.models.qemu_guest_agent import QemuGuestAgentConfig
 from opnsense_config_generator.models.wireguard import WireguardConfig
 
 

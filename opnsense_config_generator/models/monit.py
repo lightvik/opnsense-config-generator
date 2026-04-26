@@ -3,7 +3,9 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 SslVersion = Literal["auto", "tlsv1", "tlsv11", "tlsv12", "tlsv13"]
-ServiceType = Literal["process", "file", "fifo", "filesystem", "directory", "host", "system", "custom", "network"]
+ServiceType = Literal[
+    "process", "file", "fifo", "filesystem", "directory", "host", "system", "custom", "network"
+]
 TestType = Literal[
     "Existence", "SystemResource", "ProcessResource", "ProcessDiskIO", "FileChecksum",
     "Timestamp", "FileSize", "FileContent", "FilesystemMountFlags", "SpaceUsage",

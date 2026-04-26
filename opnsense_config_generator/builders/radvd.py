@@ -1,7 +1,7 @@
 from lxml import etree
 
 from opnsense_config_generator.builders.base import append_if, bool_val
-from opnsense_config_generator.models.radvd import RadvdEntry, RadvdConfig
+from opnsense_config_generator.models.radvd import RadvdConfig, RadvdEntry
 from opnsense_config_generator.uuid_utils import make_uuid
 from opnsense_config_generator.xml_utils import sub
 

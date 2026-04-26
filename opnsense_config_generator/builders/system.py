@@ -1,6 +1,5 @@
 from lxml import etree
 
-from opnsense_config_generator.builders.base import bool_val
 from opnsense_config_generator.models.system import Group, SystemConfig, User
 from opnsense_config_generator.password import hash_password
 from opnsense_config_generator.xml_utils import sub
