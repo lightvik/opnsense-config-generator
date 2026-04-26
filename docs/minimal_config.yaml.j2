@@ -267,3 +267,26 @@ unbound:
   #   - domain: corp.example.com
   #     ip: 10.0.0.53
   #     descr: "Corporate DNS"
+
+# ==============================================================================
+# NTP (ntpd)
+# ==============================================================================
+ntpd:
+  servers:
+    - address: 0.opnsense.pool.ntp.org
+      pool: true                    # пул (ispool): несколько адресов за одним именем
+      prefer: true                  # предпочитаемый источник
+    - address: 1.opnsense.pool.ntp.org
+      pool: true
+    - address: 2.opnsense.pool.ntp.org
+      pool: true
+    - address: 3.opnsense.pool.ntp.org
+      pool: true
+    # Статический NTP-сервер (не пул):
+    # - address: ntp.example.com
+    #   pool: false
+    #   prefer: false
+    #   noselect: false             # не использовать для синхронизации (только мониторинг)
+
+  # interface: ""                   # bind только на этот интерфейс (пусто = все)
+  # orphan: 12                      # orphan stratum при отсутствии upstream
