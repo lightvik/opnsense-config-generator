@@ -27,13 +27,27 @@ def get_latest_stable() -> str | None:
     if token:
         headers["Authorization"] = f"Bearer {token}"
     req = urllib.request.Request(API_URL, headers=headers)
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        releases = json.loads(resp.read())
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            raw = resp.read()
+    except Exception as e:
+        print(f"API request failed: {e}", file=sys.stderr)
+        return None
 
+    releases = json.loads(raw)
+
+    if not isinstance(releases, list):
+        print(f"Unexpected API response: {raw[:500].decode(errors='replace')}", file=sys.stderr)
+        return None
+
+    print(f"Got {len(releases)} releases from API", file=sys.stderr)
     for rel in releases:
-        if rel.get("prerelease") or rel.get("draft"):
-            continue
         tag = rel.get("tag_name", "")
+        prerelease = rel.get("prerelease", False)
+        draft = rel.get("draft", False)
+        print(f"  tag={tag!r} prerelease={prerelease} draft={draft}", file=sys.stderr)
+        if prerelease or draft:
+            continue
         # OPNsense stable tags look like "26.1.6" or "v26.1.6"
         version = tag.lstrip("v")
         parts = version.split(".")
