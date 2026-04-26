@@ -1,0 +1,54 @@
+name: Check OPNsense Release
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'  # Monday 08:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run release check
+        id: check
+        run: |
+          set +e
+          output=$(python scripts/check_new_opnsense_release.py)
+          exit_code=$?
+          echo "$output"
+          if [ "$exit_code" -eq 2 ]; then
+            version=$(echo "$output" | grep -oP 'NEW RELEASE DETECTED: \K[\d.]+')
+            echo "new_version=$version" >> "$GITHUB_OUTPUT"
+          fi
+          exit "$exit_code"
+
+      - name: Open issue for new version
+        if: failure() && steps.check.outputs.new_version != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_VERSION: ${{ steps.check.outputs.new_version }}
+        run: |
+          existing=$(gh issue list --state open --search "OPNsense ${NEW_VERSION}" --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            echo "Issue #$existing already exists, skipping."
+            exit 0
+          fi
+          gh issue create \
+            --title "New OPNsense release: ${NEW_VERSION}" \
+            --body "OPNsense **${NEW_VERSION}** has been released.
+
+          To update the reference files, run:
+          \`\`\`
+          python scripts/sync_opnsense_reference.py
+          \`\`\`
+          Then bump \`OPNSENSE_VERSION\` in \`opnsense_config_generator/version.py\` and create a new tag."
