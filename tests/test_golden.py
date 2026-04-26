@@ -44,8 +44,7 @@ def _run_golden(case_name: str, update_snapshots: bool) -> None:
         return
 
     assert actual == expected_xml.read_text(), (
-        f"Golden mismatch for {case_name}. "
-        "Run with --update-snapshots to regenerate."
+        f"Golden mismatch for {case_name}. Run with --update-snapshots to regenerate."
     )
 
 

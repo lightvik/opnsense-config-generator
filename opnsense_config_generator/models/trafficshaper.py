@@ -6,8 +6,19 @@ BandwidthMetric = Literal["bit", "Kbit", "Mbit", "Gbit"]
 PipeMask = Literal["none", "src-ip", "dst-ip", "src-ip6", "dst-ip6"]
 Scheduler = Literal["", "fifo", "rr", "qfq", "fq_codel", "fq_pie"]
 Proto = Literal[
-    "ip", "ip4", "ip6", "udp", "tcp", "tcp_ack", "tcp_ack_not",
-    "icmp", "ipv6-icmp", "igmp", "esp", "ah", "gre",
+    "ip",
+    "ip4",
+    "ip6",
+    "udp",
+    "tcp",
+    "tcp_ack",
+    "tcp_ack_not",
+    "icmp",
+    "ipv6-icmp",
+    "igmp",
+    "esp",
+    "ah",
+    "gre",
 ]
 Direction = Literal["", "in", "out"]
 

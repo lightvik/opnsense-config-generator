@@ -6,7 +6,7 @@ class DnsmasqDhcpRange(BaseModel):
     start_addr: str
     end_addr: str
     constructor: str = ""  # IPv6: parent interface для prefix delegation
-    ra_mode: str = ""      # slaac | ra-only | ra-stateless | ra-names | ra-advrouter
+    ra_mode: str = ""  # slaac | ra-only | ra-stateless | ra-names | ra-advrouter
 
 
 class DnsmasqDhcp(BaseModel):
@@ -15,10 +15,10 @@ class DnsmasqDhcp(BaseModel):
 
 class DnsmasqConfig(BaseModel):
     enable: bool = False
-    port: str = "53053"   # Unbound занимает 53; dnsmasq слушает на этом порту
+    port: str = "53053"  # Unbound занимает 53; dnsmasq слушает на этом порту
     interface: str = "lan"
     dhcp: DnsmasqDhcp = Field(default_factory=DnsmasqDhcp)
     dhcp_ranges: list[DnsmasqDhcpRange] = Field(default_factory=list)
-    regdhcp: bool = False        # регистрировать DHCP-аренды в DNS
+    regdhcp: bool = False  # регистрировать DHCP-аренды в DNS
     regdhcpstatic: bool = False  # регистрировать статические резервации в DNS
-    strict_order: bool = False   # опрашивать upstream DNS в заданном порядке
+    strict_order: bool = False  # опрашивать upstream DNS в заданном порядке

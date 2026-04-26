@@ -21,14 +21,14 @@ class OpenVpnInstance(BaseModel):
     dev_type: OpenVpnDevType = "tun"
     proto: OpenVpnProto = "udp"
     port: str = "1194"
-    local: str = ""          # local bind address (empty = all interfaces)
-    remote: str = ""         # remote server address (client role)
-    server: str = ""         # server pool CIDR (e.g. 10.8.0.0/24)
+    local: str = ""  # local bind address (empty = all interfaces)
+    remote: str = ""  # remote server address (client role)
+    server: str = ""  # server pool CIDR (e.g. 10.8.0.0/24)
     server_ipv6: str = ""
     topology: OpenVpnTopology = "subnet"
-    ca: str = ""             # caref
-    cert: str = ""           # certref
-    tls_key: str = ""        # uuid of StaticKey
+    ca: str = ""  # caref
+    cert: str = ""  # certref
+    tls_key: str = ""  # uuid of StaticKey
     verify_client_cert: Literal["require", "none"] = "require"
     remote_cert_tls: bool = False
     cert_depth: str = ""

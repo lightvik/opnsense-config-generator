@@ -103,9 +103,7 @@ def _build_users(system: etree._Element, users: list[User]) -> None:
             sub(u, "groupname", user.groupname)
         # plaintext → bcrypt hash, never store plaintext in XML
         password_hash = (
-            user.password
-            if user.password.startswith("$2")
-            else hash_password(user.password)
+            user.password if user.password.startswith("$2") else hash_password(user.password)
         )
         sub(u, "password", password_hash)
         sub(u, "uid", str(user.uid))

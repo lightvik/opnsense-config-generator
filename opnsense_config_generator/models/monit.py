@@ -7,10 +7,29 @@ ServiceType = Literal[
     "process", "file", "fifo", "filesystem", "directory", "host", "system", "custom", "network"
 ]
 TestType = Literal[
-    "Existence", "SystemResource", "ProcessResource", "ProcessDiskIO", "FileChecksum",
-    "Timestamp", "FileSize", "FileContent", "FilesystemMountFlags", "SpaceUsage",
-    "InodeUsage", "DiskIO", "Permisssion", "UID", "GID", "PID", "PPID", "Uptime",
-    "ProgramStatus", "NetworkInterface", "NetworkPing", "Connection", "Custom",
+    "Existence",
+    "SystemResource",
+    "ProcessResource",
+    "ProcessDiskIO",
+    "FileChecksum",
+    "Timestamp",
+    "FileSize",
+    "FileContent",
+    "FilesystemMountFlags",
+    "SpaceUsage",
+    "InodeUsage",
+    "DiskIO",
+    "Permisssion",
+    "UID",
+    "GID",
+    "PID",
+    "PPID",
+    "Uptime",
+    "ProgramStatus",
+    "NetworkInterface",
+    "NetworkPing",
+    "Connection",
+    "Custom",
 ]
 TestAction = Literal["alert", "restart", "start", "stop", "exec", "unmonitor"]
 
@@ -64,7 +83,7 @@ class MonitService(BaseModel):
     interface: str = ""
     start: str = ""
     stop: str = ""
-    tests: list[str] = Field(default_factory=list)   # test names → resolved to UUIDs in builder
+    tests: list[str] = Field(default_factory=list)  # test names → resolved to UUIDs in builder
     depends: list[str] = Field(default_factory=list)  # service names → resolved to UUIDs in builder
     polltime: str = ""
 

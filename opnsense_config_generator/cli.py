@@ -19,8 +19,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         prog="opnsense-config-generator",
         description=(
-            f"OPNsense config.xml generator v{TOOL_VERSION} "
-            f"(target OPNsense {OPNSENSE_VERSION})"
+            f"OPNsense config.xml generator v{TOOL_VERSION} (target OPNsense {OPNSENSE_VERSION})"
         ),
     )
     sub = parser.add_subparsers(dest="command", required=True)

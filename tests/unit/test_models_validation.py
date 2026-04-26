@@ -116,9 +116,13 @@ def test_kea_dhcp4_subnet() -> None:
 
 
 def test_kea_dhcp4_config() -> None:
-    cfg = KeaDhcpv4Config(enabled=True, interfaces=["lan"], subnets=[
-        KeaSubnet4(subnet="192.168.1.0/24", pools=["192.168.1.100-192.168.1.200"]),
-    ])
+    cfg = KeaDhcpv4Config(
+        enabled=True,
+        interfaces=["lan"],
+        subnets=[
+            KeaSubnet4(subnet="192.168.1.0/24", pools=["192.168.1.100-192.168.1.200"]),
+        ],
+    )
     assert cfg.enabled is True
     assert len(cfg.subnets) == 1
     assert cfg.subnets[0].subnet == "192.168.1.0/24"
@@ -286,6 +290,7 @@ def test_full_minimal_parse() -> None:
     from pathlib import Path
 
     import yaml
+
     data = yaml.safe_load((Path(__file__).parent.parent / "golden/minimal/config.yaml").read_text())
     cfg = OpnSenseConfig.model_validate(data)
     assert cfg.system.hostname == "fw01"

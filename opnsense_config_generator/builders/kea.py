@@ -46,10 +46,17 @@ def _build_dhcp4(cfg: KeaDhcpv4Config) -> etree._Element:
         if sn.pools:
             sub(s, "pools", ",".join(sn.pools))
         od = sn.option_data
-        has_options = any([
-            od.routers, od.domain_name_servers, od.domain_name,
-            od.domain_search, od.ntp_servers, od.tftp_server_name, od.boot_file_name,
-        ])
+        has_options = any(
+            [
+                od.routers,
+                od.domain_name_servers,
+                od.domain_name,
+                od.domain_search,
+                od.ntp_servers,
+                od.tftp_server_name,
+                od.boot_file_name,
+            ]
+        )
         if has_options:
             opt_el = etree.SubElement(s, "option_data")
             if od.routers:

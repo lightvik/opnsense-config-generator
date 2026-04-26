@@ -3,8 +3,15 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 AcmeCa = Literal[
-    "buypass", "buypass_test", "google", "google_test",
-    "letsencrypt", "letsencrypt_test", "sslcom", "zerossl", "custom",
+    "buypass",
+    "buypass_test",
+    "google",
+    "google_test",
+    "letsencrypt",
+    "letsencrypt_test",
+    "sslcom",
+    "zerossl",
+    "custom",
 ]
 AcmeKeyLength = Literal["key_2048", "key_3072", "key_4096", "key_ec256", "key_ec384"]
 AcmeAliasMode = Literal["none", "automatic", "domain", "challenge"]

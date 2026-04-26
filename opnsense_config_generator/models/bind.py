@@ -4,14 +4,32 @@ from pydantic import BaseModel, Field
 
 BindDnssecValidation = Literal["no", "auto"]
 BindRndcAlgo = Literal[
-    "hmac-sha512", "hmac-sha384", "hmac-sha256",
-    "hmac-sha224", "hmac-sha1", "hmac-md5",
+    "hmac-sha512",
+    "hmac-sha384",
+    "hmac-sha256",
+    "hmac-sha224",
+    "hmac-sha1",
+    "hmac-md5",
 ]
 BindLogLevel = Literal["crit", "error", "warn", "notice", "info", "debug", "dynamic"]
 BindDomainType = Literal["primary", "secondary", "forward"]
 BindRecordType = Literal[
-    "A", "AAAA", "CAA", "CNAME", "DNAME", "DNSKEY", "DS",
-    "MX", "NS", "PTR", "RP", "RRSIG", "SRV", "SSHFP", "TLSA", "TXT",
+    "A",
+    "AAAA",
+    "CAA",
+    "CNAME",
+    "DNAME",
+    "DNSKEY",
+    "DS",
+    "MX",
+    "NS",
+    "PTR",
+    "RP",
+    "RRSIG",
+    "SRV",
+    "SSHFP",
+    "TLSA",
+    "TXT",
 ]
 
 
