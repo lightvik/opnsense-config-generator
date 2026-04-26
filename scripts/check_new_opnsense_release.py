@@ -2,6 +2,7 @@
 """Check GitHub for new stable OPNsense CE releases (for CI cron-job)."""
 
 import json
+import os
 import sys
 import urllib.request
 from pathlib import Path
@@ -18,13 +19,14 @@ def get_current_version() -> str:
 
 
 def get_latest_stable() -> str | None:
-    req = urllib.request.Request(
-        API_URL,
-        headers={
-            "User-Agent": "opnsense-config-generator/check",
-            "Accept": "application/vnd.github+json",
-        },
-    )
+    headers = {
+        "User-Agent": "opnsense-config-generator/check",
+        "Accept": "application/vnd.github+json",
+    }
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    req = urllib.request.Request(API_URL, headers=headers)
     with urllib.request.urlopen(req, timeout=15) as resp:
         releases = json.loads(resp.read())
 

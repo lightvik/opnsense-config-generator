@@ -24,6 +24,8 @@ jobs:
 
       - name: Run release check
         id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set +e
           output=$(python scripts/check_new_opnsense_release.py)
