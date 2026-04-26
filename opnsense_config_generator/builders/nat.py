@@ -9,21 +9,21 @@ def build_nat(cfg: NatConfig) -> etree._Element:
 
     outbound = etree.SubElement(nat, "outbound")
     sub(outbound, "mode", cfg.outbound_mode)
-    for rule in cfg.outbound_rules:
-        _build_outbound_rule(outbound, rule)
+    for outbound_rule in cfg.outbound_rules:
+        _build_outbound_rule(outbound, outbound_rule)
 
-    for rule in cfg.port_forwards:
-        _build_port_forward(nat, rule)
+    for pf in cfg.port_forwards:
+        _build_port_forward(nat, pf)
 
-    for rule in cfg.one_to_one:
+    for o2o in cfg.one_to_one:
         one = etree.SubElement(nat, "onetoone")
-        sub(one, "interface", rule.interface)
-        _build_nat_address(one, "source", rule.source)
-        _build_nat_address(one, "destination", rule.destination)
-        sub(one, "target", rule.target)
-        if rule.descr:
-            sub(one, "descr", rule.descr)
-        if rule.disabled:
+        sub(one, "interface", o2o.interface)
+        _build_nat_address(one, "source", o2o.source)
+        _build_nat_address(one, "destination", o2o.destination)
+        sub(one, "target", o2o.target)
+        if o2o.descr:
+            sub(one, "descr", o2o.descr)
+        if o2o.disabled:
             sub(one, "disabled")
 
     return nat

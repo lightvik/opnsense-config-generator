@@ -1,6 +1,6 @@
 -r requirements.txt
 ruff==0.15.12
-mypy>=1.10
-pytest>=8.0
-lxml-stubs>=0.5
-types-pyyaml>=6.0
+mypy==1.20.2
+pytest==9.0.3
+lxml-stubs==0.5.1
+types-pyyaml==6.0.12.20260408
