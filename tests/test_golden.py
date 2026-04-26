@@ -16,10 +16,12 @@ def _get_golden_cases() -> list[Path]:
 
 
 def _normalize_xml(xml_bytes: bytes) -> str:
-    """Strip the <revision><time> element before comparing (it changes every run)."""
+    """Normalize volatile fields before comparing (timestamp, bcrypt, tool version)."""
     root = etree.fromstring(xml_bytes)
     for rev in root.findall(".//revision/time"):
         rev.text = "TIMESTAMP"
+    for rev in root.findall(".//revision/description"):
+        rev.text = "DESCRIPTION"
     for pw in root.findall(".//password"):
         if pw.text and pw.text.startswith("$2"):
             pw.text = "BCRYPT_HASH"
