@@ -2,8 +2,8 @@ import pytest
 from pydantic import ValidationError
 
 from opnsense_config_generator.models.acme_client import (
-    AcmeClientConfig,
     AcmeCertificate,
+    AcmeClientConfig,
     AcmeValidation,
 )
 from opnsense_config_generator.models.aliases import Alias
