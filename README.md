@@ -1,7 +1,7 @@
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="logo-dark.svg">
-    <img src="logo-light.svg" alt="packer-opnsense" width="660">
+    <img src="logo-light.svg" alt="logo" width="660">
   </picture>
 </div>
 
