@@ -1,4 +1,11 @@
-# opnsense-config-generator
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="logo-dark.svg">
+    <img src="logo-light.svg" alt="packer-opnsense" width="660">
+  </picture>
+</div>
+
+## Описание
 
 Генерирует `config.xml` для OPNsense из Jinja2-шаблона. Один раз отредактировать файл,
 получить готовый XML для импорта — без ручной настройки через веб-интерфейс.
