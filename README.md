@@ -30,22 +30,42 @@ config.yaml.j2  →  (Jinja2 render)  →  build/config.yaml  →  (XML builder)
 3. Импортируйте `build/config.xml` в OPNsense:
    **System → Configuration → Backups → Restore**
 
+## Создание VM-образа с packer-opnsense
+
+Сгенерированный `build/config.xml` можно использовать напрямую в
+[packer-opnsense](https://github.com/lightvik/packer-opnsense) — Packer-шаблоне,
+который автоматически устанавливает OPNsense в `qcow2`-образ через QEMU/KVM.
+
+Полный pipeline:
+
+```text
+config.yaml.j2  →  build/config.xml  →  output/opnsense.qcow2
+                (opnsense-config-generator)  (packer-opnsense)
+```
+
 ## Использование
 
 ### Docker (Ожидаемый способ использования)
 
 ```bash
-docker run --rm --volume "$(pwd):/work" ghcr.io/lightvik/opnsense-config-generator:opnsense-26.1.6_1.0.0
+docker run \
+  --rm \
+  --volume "$(pwd):/work" \
+  ghcr.io/lightvik/opnsense-config-generator:opnsense-26.1.6_1.0.0
 ```
 
 С явными путями:
 
 ```bash
-docker run --rm --volume "$(pwd):/work" ghcr.io/lightvik/opnsense-config-generator:opnsense-26.1.6_1.0.0 render \
-    --template config.yaml.j2 \
-    --intermediate build/config.yaml \
-    --output build/config.xml
+docker run \
+  --rm \
+  --volume "$(pwd):/work" \
+  ghcr.io/lightvik/opnsense-config-generator:opnsense-26.1.6_1.0.0 render \
+  --template config.yaml.j2 \
+  --intermediate build/config.yaml \
+  --output build/config.xml
 ```
+
 ### Локально
 
 Требуется **Python 3.12+**.
@@ -76,7 +96,7 @@ opnsense-config-generator render
 
 | Файл                          | Описание                                                |
 | ----------------------------- | ------------------------------------------------------- |
-| `docs/minimal_config.yaml.j2` | Только основные секции, все параметры задокументированы |
+| `docs/minimal_config.yaml.j2` | Конфигурация по умолчанию                               |
 | `docs/full_config.yaml.j2`    | Все секции со всеми параметрами и примерами             |
 
 ### Возможности Jinja2
