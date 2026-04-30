@@ -14,7 +14,7 @@
 
 ## Версионирование
 
-Тег релиза содержит обе версии: `opnsense-{OPNSENSE_VERSION}_v{TOOL_VERSION}`.
+Тег релиза содержит обе версии: `opnsense-{OPNSENSE_VERSION}_{TOOL_VERSION}`.
 
 - При обновлении до новой версии OPNsense — обновляется `OPNSENSE_VERSION` в `version.py` и создаётся новый тег.
 - При изменениях только в инструменте — инкрементируется `TOOL_VERSION`, `OPNSENSE_VERSION` не меняется.
