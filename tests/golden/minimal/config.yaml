@@ -12,7 +12,6 @@ system:
       scope: system
       groupname: admins
       uid: 0
-      shell: /bin/sh
   groups:
     - name: admins
       description: System Administrators

@@ -24,7 +24,6 @@
       <groupname>admins</groupname>
       <password>BCRYPT_HASH</password>
       <uid>0</uid>
-      <shell>/bin/sh</shell>
     </user>
     <timezone>Europe/Moscow</timezone>
     <timeservers>0.opnsense.pool.ntp.org 1.opnsense.pool.ntp.org 2.opnsense.pool.ntp.org 3.opnsense.pool.ntp.org</timeservers>

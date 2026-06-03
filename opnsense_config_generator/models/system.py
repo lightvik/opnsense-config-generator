@@ -47,7 +47,7 @@ class User(BaseModel):
     scope: Literal["system", "user"] = "user"
     groupname: str = ""
     uid: int = Field(ge=0)
-    shell: str = "/bin/sh"
+    shell: str = ""
     expires: str = ""
     comment: str = ""
 
