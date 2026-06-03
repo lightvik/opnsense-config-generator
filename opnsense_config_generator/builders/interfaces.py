@@ -1,6 +1,10 @@
 from lxml import etree
 
-from opnsense_config_generator.models.interfaces import InterfaceConfig, InterfacesConfig, WirelessConfig
+from opnsense_config_generator.models.interfaces import (
+    InterfaceConfig,
+    InterfacesConfig,
+    WirelessConfig,
+)
 from opnsense_config_generator.xml_utils import sub
 
 

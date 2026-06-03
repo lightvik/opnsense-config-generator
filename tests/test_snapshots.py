@@ -115,7 +115,9 @@ def test_snapshot_system(update_snapshots: bool) -> None:
 
 
 def test_snapshot_system_nodnsrebindcheck(update_snapshots: bool) -> None:
-    _snapshot_test("system", build_system, SystemConfig, update_snapshots, fixture="with_nodnsrebindcheck")
+    _snapshot_test(
+        "system", build_system, SystemConfig, update_snapshots, fixture="with_nodnsrebindcheck"
+    )
 
 
 def test_snapshot_interfaces(update_snapshots: bool) -> None:
@@ -203,11 +205,15 @@ def test_snapshot_system_advanced(update_snapshots: bool) -> None:
 
 
 def test_snapshot_unbound_advanced(update_snapshots: bool) -> None:
-    _snapshot_test("unbound", build_unbound, UnboundConfig, update_snapshots, fixture="with_advanced")
+    _snapshot_test(
+        "unbound", build_unbound, UnboundConfig, update_snapshots, fixture="with_advanced"
+    )
 
 
 def test_snapshot_dnsmasq_advanced(update_snapshots: bool) -> None:
-    _snapshot_test("dnsmasq", build_dnsmasq, DnsmasqConfig, update_snapshots, fixture="with_advanced")
+    _snapshot_test(
+        "dnsmasq", build_dnsmasq, DnsmasqConfig, update_snapshots, fixture="with_advanced"
+    )
 
 
 def test_snapshot_ntpd_advanced(update_snapshots: bool) -> None:
@@ -215,4 +221,6 @@ def test_snapshot_ntpd_advanced(update_snapshots: bool) -> None:
 
 
 def test_snapshot_interfaces_advanced(update_snapshots: bool) -> None:
-    _snapshot_test("interfaces", build_interfaces, InterfacesConfig, update_snapshots, fixture="with_advanced")
+    _snapshot_test(
+        "interfaces", build_interfaces, InterfacesConfig, update_snapshots, fixture="with_advanced"
+    )
