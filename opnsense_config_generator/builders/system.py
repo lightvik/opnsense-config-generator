@@ -63,6 +63,8 @@ def _build_webgui(system: etree._Element, cfg: SystemConfig) -> None:
         sub(wg, "interfaces", cfg.webgui.interfaces)
     if cfg.webgui.nohttpreferercheck:
         sub(wg, "nohttpreferercheck")
+    if cfg.webgui.nodnsrebindcheck:
+        sub(wg, "nodnsrebindcheck")
     if cfg.webgui.loginautocomplete:
         sub(wg, "loginautocomplete")
     if cfg.webgui.ssl_certref:

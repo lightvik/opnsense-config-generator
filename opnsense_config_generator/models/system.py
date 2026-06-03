@@ -8,6 +8,7 @@ class WebGui(BaseModel):
     port: str = ""
     interfaces: str = ""
     nohttpreferercheck: bool = False
+    nodnsrebindcheck: bool = False
     loginautocomplete: bool = False
     ssl_certref: str = ""
 

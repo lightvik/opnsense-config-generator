@@ -108,6 +108,10 @@ def test_snapshot_system(update_snapshots: bool) -> None:
     _snapshot_test("system", build_system, SystemConfig, update_snapshots)
 
 
+def test_snapshot_system_nodnsrebindcheck(update_snapshots: bool) -> None:
+    _snapshot_test("system", build_system, SystemConfig, update_snapshots, fixture="with_nodnsrebindcheck")
+
+
 def test_snapshot_interfaces(update_snapshots: bool) -> None:
     _snapshot_test("interfaces", build_interfaces, InterfacesConfig, update_snapshots)
 
