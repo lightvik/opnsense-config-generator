@@ -60,8 +60,17 @@ def build_system(cfg: SystemConfig) -> etree._Element:
     if cfg.dnssearchdomain:
         sub(system, "dnssearchdomain", cfg.dnssearchdomain)
     for i, gw_field in enumerate(
-        [cfg.dns1gw, cfg.dns2gw, cfg.dns3gw, cfg.dns4gw,
-         cfg.dns5gw, cfg.dns6gw, cfg.dns7gw, cfg.dns8gw], start=1
+        [
+            cfg.dns1gw,
+            cfg.dns2gw,
+            cfg.dns3gw,
+            cfg.dns4gw,
+            cfg.dns5gw,
+            cfg.dns6gw,
+            cfg.dns7gw,
+            cfg.dns8gw,
+        ],
+        start=1,
     ):
         if gw_field:
             sub(system, f"dns{i}gw", gw_field)
