@@ -1,0 +1,24 @@
+<gateways>
+  <gateway_item>
+    <name>WAN_GW</name>
+    <interface>wan</interface>
+    <gateway>192.168.1.1</gateway>
+    <ipprotocol>inet</ipprotocol>
+    <descr>WAN Gateway</descr>
+    <defaultgw/>
+    <weight>1</weight>
+    <interval>1</interval>
+    <loss_interval>2</loss_interval>
+    <time_period>60</time_period>
+    <alert_interval>1</alert_interval>
+    <latencylow>200</latencylow>
+    <latencyhigh>500</latencyhigh>
+    <losslow>10</losslow>
+    <losshigh>20</losshigh>
+    <data_length>0</data_length>
+    <priority>254</priority>
+    <fargw/>
+    <monitor_killstates/>
+    <nosync/>
+  </gateway_item>
+</gateways>

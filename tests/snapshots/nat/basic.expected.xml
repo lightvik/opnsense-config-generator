@@ -1,0 +1,39 @@
+<nat>
+  <outbound>
+    <mode>automatic</mode>
+    <rule>
+      <interface>wan</interface>
+      <ipprotocol>inet</ipprotocol>
+      <protocol>tcp</protocol>
+      <source>
+        <network>192.168.1.0/24</network>
+      </source>
+      <destination>
+        <any/>
+      </destination>
+      <descr>Outbound NAT rule</descr>
+      <log/>
+      <tag>tagged_traffic</tag>
+      <category>outbound</category>
+    </rule>
+  </outbound>
+  <rule>
+    <sequence>10</sequence>
+    <interface>wan</interface>
+    <ipprotocol>inet</ipprotocol>
+    <protocol>tcp</protocol>
+    <source>
+      <any/>
+    </source>
+    <destination>
+      <address>1.2.3.4</address>
+      <port>80</port>
+    </destination>
+    <target>192.168.1.100</target>
+    <local-port>8080</local-port>
+    <descr>HTTP forward</descr>
+    <nosync/>
+    <natreflection>enable</natreflection>
+    <associated-rule-id>add associated filter rule</associated-rule-id>
+  </rule>
+</nat>

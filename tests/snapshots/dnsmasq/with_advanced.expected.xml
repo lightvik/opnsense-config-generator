@@ -1,0 +1,34 @@
+<dnsmasq>
+  <enable>1</enable>
+  <port>53053</port>
+  <interface>lan</interface>
+  <domain_needed/>
+  <no_private_reverse/>
+  <log_queries/>
+  <dnssec/>
+  <regdhcpdomain>home.local</regdhcpdomain>
+  <cache_size>10000</cache_size>
+  <local_ttl>300</local_ttl>
+  <dhcp/>
+  <hosts>
+    <host>printer</host>
+    <domain>home.local</domain>
+    <ip>192.168.1.20</ip>
+    <descr>Network printer</descr>
+    <mac>aa:bb:cc:dd:ee:ff</mac>
+  </hosts>
+  <domainoverrides>
+    <domain>corp.example.com</domain>
+    <ip>10.0.0.53</ip>
+    <descr>Corporate DNS</descr>
+  </domainoverrides>
+  <dhcp_options>
+    <number>6</number>
+    <value>8.8.8.8,8.8.4.4</value>
+  </dhcp_options>
+  <dhcp_options>
+    <tag>vlan10</tag>
+    <number>3</number>
+    <value>192.168.10.1</value>
+  </dhcp_options>
+</dnsmasq>

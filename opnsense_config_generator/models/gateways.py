@@ -17,6 +17,18 @@ class Gateway(BaseModel):
     time_period: int = Field(default=60, ge=1)
     alert_interval: int = Field(default=1, ge=1)
     ipprotocol: Literal["inet", "inet6"] = "inet"
+    fargw: bool = False
+    priority: int | None = None
+    monitor_noroute: bool = False
+    monitor_killstates: bool = False
+    monitor_killstates_priority: int | None = None
+    force_down: bool = False
+    latencylow: int | None = None
+    latencyhigh: int | None = None
+    losslow: int | None = None
+    losshigh: int | None = None
+    data_length: int | None = None
+    nosync: bool = False
 
 
 class GatewaysConfig(BaseModel):

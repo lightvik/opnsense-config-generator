@@ -1,0 +1,21 @@
+servers:
+  - address: 0.pool.ntp.org
+    prefer: true
+    iburst: true
+  - address: 1.pool.ntp.org
+    pool: true
+    iburst: true
+  - address: 2.pool.ntp.org
+    noselect: true
+orphan: 10
+clientmode: true
+kod: true
+limited: true
+nomodify: true
+nopeer: true
+notrap: true
+logpeer: true
+loopstats: true
+peerstats: true
+statsgraph: true
+custom_options: "restrict 127.0.0.1\nrestrict ::1"

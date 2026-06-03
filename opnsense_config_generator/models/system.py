@@ -11,14 +11,33 @@ class WebGui(BaseModel):
     nodnsrebindcheck: bool = False
     loginautocomplete: bool = False
     ssl_certref: str = ""
+    authmode: str = ""
+    session_timeout: int | None = None
+    compression: bool = False
+    ssl_ciphers: str = Field(default="", alias="ssl-ciphers")
+    ssl_hsts: bool = Field(default=False, alias="ssl-hsts")
+    disablehttpredirect: bool = False
+    httpaccesslog: bool = False
+    noroot: bool = False
+    althostnames: str = ""
+    quietlogin: bool = False
+
+    model_config = {"populate_by_name": True}
 
 
 class Ssh(BaseModel):
     enabled: bool = False
-    # space-separated group names allowed to SSH
     group: str = "admins"
     permitrootlogin: bool = False
     passwordauth: bool = True
+    port: str = ""
+    interfaces: str = ""
+    kex: list[str] = Field(default_factory=list)
+    ciphers: list[str] = Field(default_factory=list)
+    macs: list[str] = Field(default_factory=list)
+    keys: str = ""
+    keysig: list[str] = Field(default_factory=list)
+    rekeylimit: str = ""
 
 
 class User(BaseModel):
@@ -57,7 +76,6 @@ class SystemConfig(BaseModel):
     ssh: Ssh = Field(default_factory=Ssh)
     users: list[User] = Field(default_factory=list)
     groups: list[Group] = Field(default_factory=list)
-    # misc
     disablenatreflection: Literal["yes", "no"] = "yes"
     usevirtualterminal: bool = True
     disableconsolemenu: bool = False
@@ -69,5 +87,28 @@ class SystemConfig(BaseModel):
     lb_use_sticky: bool = True
     rrdbackup: int = -1
     netflowbackup: int = -1
+    language: str = ""
+    prefer_ipv4: bool = False
+    dnslocalhost: bool = False
+    dnssearchdomain: str = ""
+    dns1gw: str = ""
+    dns2gw: str = ""
+    dns3gw: str = ""
+    dns4gw: str = ""
+    dns5gw: str = ""
+    dns6gw: str = ""
+    dns7gw: str = ""
+    dns8gw: str = ""
+    gw_switch_default: bool = False
+    sudo_allow_wheel: bool = False
+    sudo_allow_group: str = ""
+    user_allow_gen_token: bool = False
+    serialspeed: str = ""
+    serialusb: bool = False
+    primaryconsole: str = ""
+    secondaryconsole: str = ""
+    autologout: int | None = None
+    deployment: str = ""
+    theme: str = ""
 
     model_config = {"populate_by_name": True}

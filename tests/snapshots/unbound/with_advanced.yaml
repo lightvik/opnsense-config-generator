@@ -1,0 +1,47 @@
+enable: true
+dnssec: true
+port: "5353"
+regdhcp: true
+regdhcpstatic: true
+regdhcpdomain: home.local
+txtsupport: true
+safesearch: true
+serveexpired: true
+serveexpiredttl: 3600
+qnameminstrict: true
+aggressivensec: true
+extendedstatistics: true
+msgcachesize: 4096
+rrsetcachesize: 4096
+privatedomain:
+  - home.local
+  - internal.net
+privateaddress:
+  - 192.168.0.0/16
+  - 10.0.0.0/8
+hosts:
+  - host: myserver
+    domain: home.local
+    ip: 192.168.1.50
+    descr: Main server
+    rr: A
+    addptr: true
+    alias:
+      - host: www
+        domain: home.local
+        descr: Web alias
+domainoverrides:
+  - domain: corp.example.com
+    ip: 10.0.0.53
+    descr: Corporate DNS
+acls:
+  - aclname: home_network
+    aclaction: allow
+    description: Home LAN access
+    networks:
+      - 192.168.1.0/24
+      - 10.0.0.0/8
+dots:
+  - server: 1.1.1.1
+    port: "853"
+    verify: cloudflare-dns.com

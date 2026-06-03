@@ -1,0 +1,52 @@
+<filter>
+  <rule>
+    <type>pass</type>
+    <ipprotocol>inet</ipprotocol>
+    <descr>Allow ICMP</descr>
+    <interface>lan</interface>
+    <direction>in</direction>
+    <protocol>icmp</protocol>
+    <quick/>
+    <source>
+      <network>lan</network>
+    </source>
+    <destination>
+      <any/>
+    </destination>
+    <icmptype>echoreq,echorep</icmptype>
+    <gateway>WAN_GW</gateway>
+    <sched>OfficeHours</sched>
+    <tos>0x00</tos>
+    <statetimeout>30</statetimeout>
+    <nosync/>
+    <categories>icmp_rules</categories>
+    <tracker>c643ba8b-eb44-5592-af63-3305d9e06863</tracker>
+  </rule>
+  <rule>
+    <type>pass</type>
+    <ipprotocol>inet</ipprotocol>
+    <descr>Allow HTTPS with TCP flags</descr>
+    <interface>lan</interface>
+    <direction>in</direction>
+    <protocol>tcp</protocol>
+    <quick/>
+    <source>
+      <network>10.0.0.0/8</network>
+    </source>
+    <destination>
+      <address>192.168.1.100</address>
+      <port>443</port>
+    </destination>
+    <shaper1>pipe_out</shaper1>
+    <shaper2>pipe_in</shaper2>
+    <tcpflags1>SA</tcpflags1>
+    <tcpflags2>SA</tcpflags2>
+    <max-src-conn-rate>15</max-src-conn-rate>
+    <max-src-conn-rates>45</max-src-conn-rates>
+    <max>100</max>
+    <max-src-nodes>50</max-src-nodes>
+    <max-src-conn>25</max-src-conn>
+    <max-src-states>200</max-src-states>
+    <tracker>b2eed548-ee1b-5ef5-a226-ee63838e0e76</tracker>
+  </rule>
+</filter>

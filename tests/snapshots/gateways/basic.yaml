@@ -1,0 +1,16 @@
+gateways:
+  - name: WAN_GW
+    interface: wan
+    gateway: 192.168.1.1
+    descr: WAN Gateway
+    defaultgw: true
+    ipprotocol: inet
+    latencylow: 200
+    latencyhigh: 500
+    losslow: 10
+    losshigh: 20
+    data_length: 0
+    priority: 254
+    monitor_killstates: true
+    fargw: true
+    nosync: true

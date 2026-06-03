@@ -1,0 +1,56 @@
+hostname: fw01
+domain: home.local
+timezone: Europe/Moscow
+language: en_US
+prefer_ipv4: true
+dnslocalhost: true
+dnssearchdomain: home.local
+dns1gw: WAN_GW
+gw_switch_default: true
+theme: opnsense
+deployment: production
+autologout: 30
+primaryconsole: vga
+secondaryconsole: serial
+dnsserver:
+  - 8.8.8.8
+users:
+  - name: root
+    password: "$2b$12$WOdCdKlHn7i/gzS2kVNGReGOX81B0RkkkX3AjCOMV9RKWXDlwagDm"
+    descr: System Administrator
+    scope: system
+    groupname: admins
+    uid: 0
+    shell: /bin/sh
+groups:
+  - name: admins
+    description: System Administrators
+    scope: system
+    gid: 1999
+    members: [0]
+    priv: [page-all]
+webgui:
+  protocol: https
+  nodnsrebindcheck: true
+  compression: true
+  ssl-hsts: true
+  disablehttpredirect: false
+  httpaccesslog: true
+  noroot: true
+  althostnames: fw01.home.local fw01
+  quietlogin: true
+  session_timeout: 240
+  authmode: Local Database
+ssh:
+  enabled: true
+  group: admins
+  port: "2222"
+  kex:
+    - curve25519-sha256
+    - ecdh-sha2-nistp256
+  ciphers:
+    - aes256-gcm@openssh.com
+    - aes128-gcm@openssh.com
+  macs:
+    - hmac-sha2-256
+    - hmac-sha2-512

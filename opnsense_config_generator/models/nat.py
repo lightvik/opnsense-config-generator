@@ -8,6 +8,7 @@ class NatAddress(BaseModel):
     address: str = ""
     port: str = ""
     any: bool = False
+    invert: bool = False
 
 
 class OutboundNatRule(BaseModel):
@@ -22,6 +23,17 @@ class OutboundNatRule(BaseModel):
     nonat: bool = False
     staticnatport: bool = False
     poolopts: str = ""
+    protocol: str = ""
+    sourceport: str = ""
+    dstport: str = ""
+    natport: str = ""
+    poolopts_sourcehashkey: str = ""
+    log: bool = False
+    nosync: bool = False
+    ipprotocol: Literal["inet", "inet6"] = "inet"
+    tag: str = ""
+    tagged: str = ""
+    category: str = ""
 
 
 class PortForward(BaseModel):
@@ -37,6 +49,16 @@ class PortForward(BaseModel):
     associated_rule_id: str = Field(
         default="add associated filter rule", alias="associated-rule-id"
     )
+    sequence: int | None = None
+    ipprotocol: Literal["inet", "inet6", "both"] = "inet"
+    poolopts: str = ""
+    log: bool = False
+    tag: str = ""
+    tagged: str = ""
+    nosync: bool = False
+    natreflection: str = ""
+    pass_rule: str = Field(default="", alias="pass")
+    category: str = ""
 
     model_config = {"populate_by_name": True}
 

@@ -55,13 +55,13 @@
       <if>vtnet0</if>
       <mtu/>
       <ipaddr>dhcp</ipaddr>
+      <dhcphostname/>
       <ipaddrv6>dhcp6</ipaddrv6>
+      <dhcp6-ia-pd-len>0</dhcp6-ia-pd-len>
       <blockpriv>1</blockpriv>
       <blockbogons>1</blockbogons>
-      <dhcphostname/>
       <media/>
       <mediaopt/>
-      <dhcp6-ia-pd-len>0</dhcp6-ia-pd-len>
     </wan>
     <lan>
       <enable>1</enable>
@@ -69,14 +69,14 @@
       <mtu/>
       <ipaddr>192.168.1.1</ipaddr>
       <subnet>24</subnet>
+      <dhcphostname/>
       <ipaddrv6>idassoc6</ipaddrv6>
       <subnetv6>64</subnetv6>
       <track6-interface>wan</track6-interface>
       <track6-prefix-id>0</track6-prefix-id>
-      <dhcphostname/>
+      <dhcp6-ia-pd-len>0</dhcp6-ia-pd-len>
       <media/>
       <mediaopt/>
-      <dhcp6-ia-pd-len>0</dhcp6-ia-pd-len>
     </lan>
   </interfaces>
   <filter>

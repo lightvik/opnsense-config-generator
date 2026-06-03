@@ -1,0 +1,26 @@
+enable: true
+port: "53053"
+interface: lan
+domain_needed: true
+no_private_reverse: true
+log_queries: true
+dnssec: true
+regdhcpdomain: home.local
+cache_size: 10000
+local_ttl: 300
+hosts:
+  - host: printer
+    domain: home.local
+    ip: 192.168.1.20
+    descr: Network printer
+    mac: "aa:bb:cc:dd:ee:ff"
+domainoverrides:
+  - domain: corp.example.com
+    ip: 10.0.0.53
+    descr: Corporate DNS
+dhcp_options:
+  - number: "6"
+    value: 8.8.8.8,8.8.4.4
+  - tag: vlan10
+    number: "3"
+    value: 192.168.10.1

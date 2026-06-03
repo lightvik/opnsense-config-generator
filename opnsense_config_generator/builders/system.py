@@ -51,6 +51,43 @@ def build_system(cfg: SystemConfig) -> etree._Element:
     sub(system, "rrdbackup", str(cfg.rrdbackup))
     sub(system, "netflowbackup", str(cfg.netflowbackup))
 
+    if cfg.language:
+        sub(system, "language", cfg.language)
+    if cfg.prefer_ipv4:
+        sub(system, "prefer_ipv4")
+    if cfg.dnslocalhost:
+        sub(system, "dnslocalhost")
+    if cfg.dnssearchdomain:
+        sub(system, "dnssearchdomain", cfg.dnssearchdomain)
+    for i, gw_field in enumerate(
+        [cfg.dns1gw, cfg.dns2gw, cfg.dns3gw, cfg.dns4gw,
+         cfg.dns5gw, cfg.dns6gw, cfg.dns7gw, cfg.dns8gw], start=1
+    ):
+        if gw_field:
+            sub(system, f"dns{i}gw", gw_field)
+    if cfg.gw_switch_default:
+        sub(system, "gw_switch_default")
+    if cfg.sudo_allow_wheel:
+        sub(system, "sudo_allow_wheel")
+    if cfg.sudo_allow_group:
+        sub(system, "sudo_allow_group", cfg.sudo_allow_group)
+    if cfg.user_allow_gen_token:
+        sub(system, "user_allow_gen_token")
+    if cfg.serialspeed:
+        sub(system, "serialspeed", cfg.serialspeed)
+    if cfg.serialusb:
+        sub(system, "serialusb")
+    if cfg.primaryconsole:
+        sub(system, "primaryconsole", cfg.primaryconsole)
+    if cfg.secondaryconsole:
+        sub(system, "secondaryconsole", cfg.secondaryconsole)
+    if cfg.autologout is not None:
+        sub(system, "autologout", str(cfg.autologout))
+    if cfg.deployment:
+        sub(system, "deployment", cfg.deployment)
+    if cfg.theme:
+        sub(system, "theme", cfg.theme)
+
     return system
 
 
@@ -61,14 +98,34 @@ def _build_webgui(system: etree._Element, cfg: SystemConfig) -> None:
         sub(wg, "port", cfg.webgui.port)
     if cfg.webgui.interfaces:
         sub(wg, "interfaces", cfg.webgui.interfaces)
+    if cfg.webgui.authmode:
+        sub(wg, "authmode", cfg.webgui.authmode)
+    if cfg.webgui.session_timeout is not None:
+        sub(wg, "session_timeout", str(cfg.webgui.session_timeout))
     if cfg.webgui.nohttpreferercheck:
         sub(wg, "nohttpreferercheck")
     if cfg.webgui.nodnsrebindcheck:
         sub(wg, "nodnsrebindcheck")
     if cfg.webgui.loginautocomplete:
         sub(wg, "loginautocomplete")
+    if cfg.webgui.compression:
+        sub(wg, "compression")
     if cfg.webgui.ssl_certref:
         sub(wg, "ssl-certref", cfg.webgui.ssl_certref)
+    if cfg.webgui.ssl_ciphers:
+        sub(wg, "ssl-ciphers", cfg.webgui.ssl_ciphers)
+    if cfg.webgui.ssl_hsts:
+        sub(wg, "ssl-hsts")
+    if cfg.webgui.disablehttpredirect:
+        sub(wg, "disablehttpredirect")
+    if cfg.webgui.httpaccesslog:
+        sub(wg, "httpaccesslog")
+    if cfg.webgui.noroot:
+        sub(wg, "noroot")
+    if cfg.webgui.althostnames:
+        sub(wg, "althostnames", cfg.webgui.althostnames)
+    if cfg.webgui.quietlogin:
+        sub(wg, "quietlogin")
 
 
 def _build_ssh(system: etree._Element, cfg: SystemConfig) -> None:
@@ -80,6 +137,22 @@ def _build_ssh(system: etree._Element, cfg: SystemConfig) -> None:
         sub(ssh, "permitrootlogin")
     if not cfg.ssh.passwordauth:
         sub(ssh, "nopasswd")
+    if cfg.ssh.port:
+        sub(ssh, "port", cfg.ssh.port)
+    if cfg.ssh.interfaces:
+        sub(ssh, "interfaces", cfg.ssh.interfaces)
+    if cfg.ssh.kex:
+        sub(ssh, "kex", ",".join(cfg.ssh.kex))
+    if cfg.ssh.ciphers:
+        sub(ssh, "ciphers", ",".join(cfg.ssh.ciphers))
+    if cfg.ssh.macs:
+        sub(ssh, "macs", ",".join(cfg.ssh.macs))
+    if cfg.ssh.keysig:
+        sub(ssh, "keysig", ",".join(cfg.ssh.keysig))
+    if cfg.ssh.keys:
+        sub(ssh, "keys", cfg.ssh.keys)
+    if cfg.ssh.rekeylimit:
+        sub(ssh, "rekeylimit", cfg.ssh.rekeylimit)
 
 
 def _build_groups(system: etree._Element, groups: list[Group]) -> None:

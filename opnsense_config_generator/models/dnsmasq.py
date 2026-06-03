@@ -5,20 +5,56 @@ class DnsmasqDhcpRange(BaseModel):
     interface: str
     start_addr: str
     end_addr: str
-    constructor: str = ""  # IPv6: parent interface для prefix delegation
-    ra_mode: str = ""  # slaac | ra-only | ra-stateless | ra-names | ra-advrouter
+    constructor: str = ""
+    ra_mode: str = ""
 
 
 class DnsmasqDhcp(BaseModel):
-    enable_ra: bool = False  # IPv6 Router Advertisements
+    enable_ra: bool = False
+
+
+class DnsmasqHost(BaseModel):
+    host: str
+    domain: str
+    ip: str
+    descr: str = ""
+    mac: str = ""
+
+
+class DnsmasqDomainOverride(BaseModel):
+    domain: str
+    ip: str
+    descr: str = ""
+
+
+class DnsmasqDhcpOption(BaseModel):
+    tag: str = ""
+    number: str
+    value: str = ""
 
 
 class DnsmasqConfig(BaseModel):
     enable: bool = False
-    port: str = "53053"  # Unbound занимает 53; dnsmasq слушает на этом порту
+    port: str = "53053"
     interface: str = "lan"
     dhcp: DnsmasqDhcp = Field(default_factory=DnsmasqDhcp)
     dhcp_ranges: list[DnsmasqDhcpRange] = Field(default_factory=list)
-    regdhcp: bool = False  # регистрировать DHCP-аренды в DNS
-    regdhcpstatic: bool = False  # регистрировать статические резервации в DNS
-    strict_order: bool = False  # опрашивать upstream DNS в заданном порядке
+    regdhcp: bool = False
+    regdhcpstatic: bool = False
+    strict_order: bool = False
+    dhcpfirst: bool = False
+    domain_needed: bool = False
+    no_private_reverse: bool = False
+    no_resolv: bool = False
+    log_queries: bool = False
+    no_hosts: bool = False
+    strictbind: bool = False
+    dnssec: bool = False
+    regdhcpdomain: str = ""
+    dns_forward_max: int | None = None
+    cache_size: int | None = None
+    local_ttl: int | None = None
+    add_mac: bool = False
+    hosts: list[DnsmasqHost] = Field(default_factory=list)
+    domainoverrides: list[DnsmasqDomainOverride] = Field(default_factory=list)
+    dhcp_options: list[DnsmasqDhcpOption] = Field(default_factory=list)

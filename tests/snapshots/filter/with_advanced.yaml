@@ -1,0 +1,39 @@
+rules:
+  - type: pass
+    ipprotocol: inet
+    interface: lan
+    protocol: icmp
+    icmptype:
+      - echoreq
+      - echorep
+    source:
+      network: lan
+    destination:
+      any: true
+    descr: Allow ICMP
+    gateway: WAN_GW
+    sched: OfficeHours
+    tos: "0x00"
+    statetimeout: "30"
+    nosync: true
+    categories: icmp_rules
+  - type: pass
+    ipprotocol: inet
+    interface: lan
+    protocol: tcp
+    source:
+      network: 10.0.0.0/8
+    destination:
+      address: 192.168.1.100
+      port: "443"
+    descr: Allow HTTPS with TCP flags
+    tcpflags1: "SA"
+    tcpflags2: "SA"
+    shaper1: pipe_out
+    shaper2: pipe_in
+    max: "100"
+    max-src-nodes: "50"
+    max-src-conn: "25"
+    max-src-states: "200"
+    max-src-conn-rate: "15"
+    max-src-conn-rates: "45"

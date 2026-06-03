@@ -1,0 +1,53 @@
+<unbound>
+  <enable>1</enable>
+  <port>5353</port>
+  <dnssec/>
+  <hideidentity/>
+  <hideversion/>
+  <extendedstatistics/>
+  <msgcachesize>4096</msgcachesize>
+  <rrsetcachesize>4096</rrsetcachesize>
+  <txtsupport/>
+  <safesearch/>
+  <aggressivensec/>
+  <serveexpired/>
+  <serveexpiredttl>3600</serveexpiredttl>
+  <qnameminstrict/>
+  <regdhcp/>
+  <regdhcpdomain>home.local</regdhcpdomain>
+  <regdhcpstatic/>
+  <privatedomain>home.local</privatedomain>
+  <privatedomain>internal.net</privatedomain>
+  <privateaddress>192.168.0.0/16</privateaddress>
+  <privateaddress>10.0.0.0/8</privateaddress>
+  <hosts>
+    <host>myserver</host>
+    <domain>home.local</domain>
+    <ip>192.168.1.50</ip>
+    <descr>Main server</descr>
+    <rr>A</rr>
+    <addptr/>
+    <alias>
+      <host>www</host>
+      <domain>home.local</domain>
+      <descr>Web alias</descr>
+    </alias>
+  </hosts>
+  <domainoverrides>
+    <domain>corp.example.com</domain>
+    <ip>10.0.0.53</ip>
+    <descr>Corporate DNS</descr>
+  </domainoverrides>
+  <acls>
+    <aclname>home_network</aclname>
+    <aclaction>allow</aclaction>
+    <description>Home LAN access</description>
+    <row>192.168.1.0/24</row>
+    <row>10.0.0.0/8</row>
+  </acls>
+  <dots>
+    <server>1.1.1.1</server>
+    <port>853</port>
+    <verify>cloudflare-dns.com</verify>
+  </dots>
+</unbound>

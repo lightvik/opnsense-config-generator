@@ -14,11 +14,13 @@ from opnsense_config_generator.builders.chrony import build_chrony
 from opnsense_config_generator.builders.cron import build_cron
 from opnsense_config_generator.builders.dnsmasq import build_dnsmasq
 from opnsense_config_generator.builders.filter import build_filter
+from opnsense_config_generator.builders.gateways import build_gateways
 from opnsense_config_generator.builders.git_backup import build_git_backup
 from opnsense_config_generator.builders.interfaces import build_interfaces
 from opnsense_config_generator.builders.ipsec import build_ipsec
 from opnsense_config_generator.builders.kea import build_kea
 from opnsense_config_generator.builders.monit import build_monit
+from opnsense_config_generator.builders.nat import build_nat
 from opnsense_config_generator.builders.ntpd import build_ntpd
 from opnsense_config_generator.builders.openvpn import build_openvpn
 from opnsense_config_generator.builders.qemu_guest_agent import build_qemu_guest_agent
@@ -26,6 +28,7 @@ from opnsense_config_generator.builders.radvd import build_radvd
 from opnsense_config_generator.builders.syslog import build_syslog
 from opnsense_config_generator.builders.system import build_system
 from opnsense_config_generator.builders.trafficshaper import build_trafficshaper
+from opnsense_config_generator.builders.unbound import build_unbound
 from opnsense_config_generator.builders.wireguard import build_wireguard
 from opnsense_config_generator.models.acme_client import AcmeClientConfig
 from opnsense_config_generator.models.bind import BindConfig
@@ -33,11 +36,13 @@ from opnsense_config_generator.models.chrony import ChronyConfig
 from opnsense_config_generator.models.cron import CronConfig
 from opnsense_config_generator.models.dnsmasq import DnsmasqConfig
 from opnsense_config_generator.models.filter import FilterConfig
+from opnsense_config_generator.models.gateways import GatewaysConfig
 from opnsense_config_generator.models.git_backup import GitBackupConfig
 from opnsense_config_generator.models.interfaces import InterfacesConfig
 from opnsense_config_generator.models.ipsec import IpsecConfig
 from opnsense_config_generator.models.kea import KeaConfig
 from opnsense_config_generator.models.monit import MonitConfig
+from opnsense_config_generator.models.nat import NatConfig
 from opnsense_config_generator.models.ntpd import NtpdConfig
 from opnsense_config_generator.models.openvpn import OpenVpnConfig
 from opnsense_config_generator.models.qemu_guest_agent import QemuGuestAgentConfig
@@ -45,6 +50,7 @@ from opnsense_config_generator.models.radvd import RadvdConfig
 from opnsense_config_generator.models.syslog import SyslogConfig
 from opnsense_config_generator.models.system import SystemConfig
 from opnsense_config_generator.models.trafficshaper import TrafficShaperConfig
+from opnsense_config_generator.models.unbound import UnboundConfig
 from opnsense_config_generator.models.wireguard import WireguardConfig
 
 SNAPSHOTS_DIR = Path(__file__).parent / "snapshots"
@@ -178,3 +184,35 @@ def test_snapshot_chrony(update_snapshots: bool) -> None:
 
 def test_snapshot_git_backup(update_snapshots: bool) -> None:
     _snapshot_test("git_backup", build_git_backup, GitBackupConfig, update_snapshots)
+
+
+def test_snapshot_gateways(update_snapshots: bool) -> None:
+    _snapshot_test("gateways", build_gateways, GatewaysConfig, update_snapshots)
+
+
+def test_snapshot_nat(update_snapshots: bool) -> None:
+    _snapshot_test("nat", build_nat, NatConfig, update_snapshots)
+
+
+def test_snapshot_filter_advanced(update_snapshots: bool) -> None:
+    _snapshot_test("filter", build_filter, FilterConfig, update_snapshots, fixture="with_advanced")
+
+
+def test_snapshot_system_advanced(update_snapshots: bool) -> None:
+    _snapshot_test("system", build_system, SystemConfig, update_snapshots, fixture="with_advanced")
+
+
+def test_snapshot_unbound_advanced(update_snapshots: bool) -> None:
+    _snapshot_test("unbound", build_unbound, UnboundConfig, update_snapshots, fixture="with_advanced")
+
+
+def test_snapshot_dnsmasq_advanced(update_snapshots: bool) -> None:
+    _snapshot_test("dnsmasq", build_dnsmasq, DnsmasqConfig, update_snapshots, fixture="with_advanced")
+
+
+def test_snapshot_ntpd_advanced(update_snapshots: bool) -> None:
+    _snapshot_test("ntpd", build_ntpd, NtpdConfig, update_snapshots, fixture="with_advanced")
+
+
+def test_snapshot_interfaces_advanced(update_snapshots: bool) -> None:
+    _snapshot_test("interfaces", build_interfaces, InterfacesConfig, update_snapshots, fixture="with_advanced")

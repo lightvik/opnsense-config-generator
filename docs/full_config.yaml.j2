@@ -55,10 +55,20 @@ system:
     protocol: https                 # http | https
     # port: ""                      # пустая строка = 443/80 по умолчанию
     # interfaces: ""                # пустая строка = все интерфейсы
+    # authmode: ""                  # метод аутентификации (Local Database / LDAP / RADIUS)
+    # session_timeout: null         # таймаут сессии в минутах (null = по умолчанию)
     # nohttpreferercheck: false     # отключить проверку HTTP Referer
     # nodnsrebindcheck: false       # отключить защиту от DNS Rebind атак (если роутер недоступен по hostname — включить true)
     # loginautocomplete: false      # разрешить автозаполнение формы входа
     # ssl_certref: ""               # refid сертификата из секции certs
+    # compression: false            # включить gzip-сжатие HTTP
+    # ssl-ciphers: ""               # список разрешённых TLS-шифров (двоеточие-разделённые)
+    # ssl-hsts: false               # включить HTTP Strict Transport Security
+    # disablehttpredirect: false    # отключить автоматический редирект HTTP → HTTPS
+    # httpaccesslog: false          # включить access-log веб-сервера
+    # noroot: false                 # запретить вход под root через WebGUI
+    # althostnames: ""              # альтернативные имена хоста (пробел-разделённые) для DNS rebind whitelist
+    # quietlogin: false             # не показывать баннер при входе
 
   # -----------------------------------------------------------------------
   # SSH
@@ -68,6 +78,14 @@ system:
     group: admins                   # группа, которой разрешён SSH-доступ
     # permitrootlogin: false        # разрешить root login по SSH
     # passwordauth: true            # разрешить аутентификацию по паролю
+    # port: ""                      # порт SSH (пусто = 22)
+    # interfaces: ""                # интерфейсы для прослушивания (пусто = все)
+    # kex: []                       # алгоритмы обмена ключами (список)
+    # ciphers: []                   # алгоритмы шифрования (список)
+    # macs: []                      # алгоритмы MAC (список)
+    # keysig: []                    # типы подписей для ключей (список)
+    # keys: ""                      # авторизованные публичные ключи
+    # rekeylimit: ""                # лимит rekey (напр. "1G 1h")
 
   # -----------------------------------------------------------------------
   # ПОЛЬЗОВАТЕЛИ
@@ -121,6 +139,25 @@ system:
   # lb_use_sticky: true
   # rrdbackup: -1
   # netflowbackup: -1
+  # language: ""                    # язык интерфейса (en_US, ru_RU и др.)
+  # prefer_ipv4: false              # предпочитать IPv4 перед IPv6
+  # dnslocalhost: false             # добавить localhost в DNS resolver
+  # dnssearchdomain: ""            # DNS search domain
+  # dns1gw: ""                     # привязать DNS-сервер 1 к шлюзу (имя шлюза)
+  # dns2gw: ""                     # привязать DNS-сервер 2 к шлюзу
+  # dns3gw: ""
+  # dns4gw: ""
+  # gw_switch_default: false        # автопереключение default gateway при отказе
+  # sudo_allow_wheel: false         # разрешить sudo для группы wheel
+  # sudo_allow_group: ""            # группа с доступом sudo
+  # user_allow_gen_token: false     # пользователи могут генерировать API-токены
+  # serialspeed: ""                 # скорость серийной консоли (9600, 115200 и др.)
+  # serialusb: false                # использовать USB-serial консоль
+  # primaryconsole: ""              # основная консоль: vga | serial
+  # secondaryconsole: ""            # вторичная консоль: vga | serial | ""
+  # autologout: null                # таймаут автологаута в минутах (null = без таймаута)
+  # deployment: ""                  # режим развёртывания: production | development
+  # theme: ""                       # тема интерфейса (opnsense, vicuna и др.)
 
 # ==============================================================================
 # INTERFACES
@@ -140,6 +177,38 @@ interfaces:
       # dhcphostname: ""            # имя хоста для DHCP-запроса
       # spoofmac: ""                # подменить MAC
       # dhcp6-ia-pd-len: 0          # длина prefix delegation (0-32)
+      # lock: false                 # заблокировать от изменений в GUI
+      # promisc: false              # promiscuous mode
+      # mss: ""                     # MSS clamping (напр. "1452")
+      # gateway_interface: false    # пометить как gateway-интерфейс
+      # dhcprejectfrom: ""          # отклонять DHCP-ответы от этих IP
+      # dhcpvlanprio: ""            # VLAN приоритет для DHCP
+      # dhcphonourmtu: false        # принимать MTU от DHCP-сервера
+      # alias-address: ""           # IP-алиас на интерфейсе
+      # alias-subnet: ""            # маска для IP-алиаса
+      # disableipv6: false          # отключить IPv6 на интерфейсе
+      # dhcp6-ifid: ""              # DHCPv6 Interface Identifier
+      # dhcp6_rapid_commit: false   # DHCPv6 Rapid Commit
+      # dhcp6prefixonly: false      # только prefix delegation (без адреса)
+      # dhcp6-ia-pd-send-hint: false  # отправлять hint для IA-PD
+      # gateway-6rd: ""             # 6rd gateway (IPv6-over-IPv4)
+      # prefix-6rd: ""              # 6rd prefix
+      # prefix-6rd-v4addr: ""       # 6rd v4 border relay address
+      # prefix-6rd-v4plen: ""       # 6rd v4 prefix length
+      # disablechecksumoffloading: false   # отключить checksum offloading
+      # disablesegmentationoffloading: false  # отключить segmentation offloading
+      # disablelargereceiveoffloading: false  # отключить large receive offloading
+      # disablevlanoffloading: false          # отключить VLAN offloading
+      # wireless:                   # настройки беспроводного интерфейса
+      #   mode: hostap              # bss | adhoc | hostap
+      #   ssid: MyNetwork
+      #   channel: "6"              # 0 = авто
+      #   authmode: wpa2psk         # wpa | wpa2psk | open
+      #   wpa_mode: wpa2
+      #   wpa_key_mgmt: WPA-PSK
+      #   wpa_pairwise: CCMP
+      #   passphrase: mysecretkey
+      #   hidessid: false           # скрыть SSID
 
     lan:
       if: vtnet1
@@ -232,6 +301,19 @@ interfaces:
 #       ipprotocol: inet6
 #       descr: "WAN IPv6 Gateway"
 #       defaultgw: true
+#       # Расширенные параметры мониторинга:
+#       # fargw: false                # far gateway (не в той же подсети)
+#       # priority: null              # приоритет маршрута 0-255 (null = default)
+#       # monitor_noroute: false      # не мониторить при отсутствии маршрута
+#       # monitor_killstates: false   # сбрасывать состояния PF при падении шлюза
+#       # monitor_killstates_priority: null  # приоритет сброса состояний (0-255)
+#       # force_down: false           # принудительно пометить шлюз как down
+#       # latencylow: null            # нижний порог задержки (мс)
+#       # latencyhigh: null           # верхний порог задержки (мс)
+#       # losslow: null               # нижний порог потерь (%)
+#       # losshigh: null              # верхний порог потерь (%)
+#       # data_length: null           # размер probe-пакета (байт)
+#       # nosync: false               # исключить из HA-синхронизации
 
 # ==============================================================================
 # STATIC ROUTES
@@ -353,6 +435,47 @@ filter:
     #     any: true
     #     port: "1024:65535"        # диапазон: start:end
 
+    # Расширенные параметры правил (доступны для всех правил):
+    # - type: pass
+    #   ...
+    #   # ICMP-фильтрация:
+    #   # icmptype: [echoreq, echorep]   # типы ICMPv4 (список)
+    #   # icmp6-type: [echorequest]      # типы ICMPv6 (список)
+    #   # Policy routing:
+    #   # gateway: GW_WAN               # направить трафик через конкретный шлюз
+    #   # reply-to: ""                  # reply-to интерфейс
+    #   # disablereplyto: false
+    #   # Расписание:
+    #   # sched: OfficeHours            # имя расписания из Schedule
+    #   # Traffic shaping:
+    #   # shaper1: pipe_out             # исходящий shaper pipe/queue
+    #   # shaper2: pipe_in              # входящий shaper pipe/queue
+    #   # set-prio: ""                  # установить QoS приоритет
+    #   # set-prio-low: ""
+    #   # prio: ""                      # фильтр по QoS приоритету
+    #   # TOS/DSCP:
+    #   # tos: "0x10"                   # TOS/DSCP matching
+    #   # TCP flags:
+    #   # tcpflags1: "SA"               # TCP flags mask
+    #   # tcpflags2: "SA"               # TCP flags set
+    #   # tcpflags_any: false           # совпадение при любых флагах
+    #   # Лимиты соединений:
+    #   # overload: virusprot           # таблица для adaptive connection limits
+    #   # statetimeout: "30"            # таймаут состояния (сек)
+    #   # max: "100"                    # максимум одновременных состояний
+    #   # max-src-nodes: "50"           # максимум уникальных source IP
+    #   # max-src-conn: "25"            # максимум соединений с одного IP
+    #   # max-src-states: "200"         # максимум состояний с одного IP
+    #   # max-src-conn-rate: "15"       # максимум новых соединений в сек
+    #   # max-src-conn-rates: "45"      # сглаженная скорость соединений
+    #   # Разное:
+    #   # allowopts: false              # разрешить IP options
+    #   # nosync: false                 # исключить из HA-синхронизации
+    #   # nopfsync: false               # не синхронизировать состояния
+    #   # categories: ""               # категория правила
+    #   # divert-to: ""                # перенаправление трафика (divert-to адрес)
+    #   # state-policy: ""             # политика состояний (if-bound | floating)
+
 # ==============================================================================
 # NAT
 # ==============================================================================
@@ -362,41 +485,56 @@ nat:
   # Правила outbound NAT (только для hybrid/advanced):
   # outbound_rules:
   #   - interface: wan
-  #     source: 192.168.1.0/24
-  #     sourceport: ""
-  #     destination: any
-  #     destinationport: ""
+  #     ipprotocol: inet            # inet | inet6
+  #     protocol: ""               # tcp | udp | tcp+udp | icmp | any | ""
+  #     source:
+  #       network: 192.168.1.0/24
+  #       invert: false             # инвертировать source
+  #     sourceport: ""             # порт источника
+  #     destination:
+  #       any: true
+  #     dstport: ""                # порт назначения
   #     target: ""                  # пусто = IP интерфейса
+  #     natport: ""                # translated port
   #     targetip_subnet: 0
-  #     protocol: any
   #     descr: "Custom outbound NAT"
   #     disabled: false
   #     nonat: false                # true = исключение из NAT
+  #     staticnatport: false
+  #     poolopts: ""               # roundrobin | sticky-address | source-hash
+  #     poolopts_sourcehashkey: "" # ключ для source-hash
+  #     log: false                 # логировать совпадения
+  #     nosync: false              # исключить из HA-синхронизации
+  #     tag: ""                    # тег пакета
+  #     tagged: ""                 # фильтр по тегу
+  #     category: ""               # категория правила
 
   # Port forwarding (DNAT):
   # port_forwards:
   #   - interface: wan
+  #     sequence: null             # порядок правила (null = автоматически)
+  #     ipprotocol: inet           # inet | inet6 | both
   #     protocol: tcp
   #     source:
   #       any: true
+  #       invert: false            # инвертировать source
   #     destination:
-  #       address: 203.0.113.1      # внешний IP WAN
+  #       address: 203.0.113.1    # внешний IP WAN
   #       port: "8080"
-  #     target: 192.168.1.10        # внутренний хост
+  #       invert: false            # инвертировать destination
+  #     target: 192.168.1.10      # внутренний хост
   #     local-port: "80"
   #     descr: HTTP redirect to web server
   #     disabled: false
-  #
-  #   - interface: wan
-  #     protocol: tcp
-  #     source:
-  #       any: true
-  #     destination:
-  #       address: 203.0.113.1
-  #       port: "22022"
-  #     target: 192.168.1.5
-  #     local-port: "22"
-  #     descr: SSH to internal host
+  #     nordr: false               # отключить NAT redirect (только фильтр)
+  #     log: false                 # логировать совпадения
+  #     poolopts: ""              # roundrobin | sticky-address
+  #     tag: ""                   # тег пакета
+  #     tagged: ""                # фильтр по тегу
+  #     nosync: false             # исключить из HA
+  #     natreflection: ""         # enable | disable | purenat
+  #     pass: ""                  # добавить правило фильтра
+  #     category: ""              # категория правила
 
   # 1:1 NAT:
   # one_to_one:
@@ -440,6 +578,41 @@ dnsmasq:
   # regdhcp: false                  # регистрировать DHCP-аренды в dnsmasq DNS
   # regdhcpstatic: false            # регистрировать статические резервации
   # strict_order: false             # опрашивать upstream DNS серверы по порядку
+  # dhcpfirst: false                # DHCP имеет приоритет над DNS при поиске хостов
+  # domain_needed: false            # не пересылать запросы без домена
+  # no_private_reverse: false       # не пересылать RFC1918 reverse-запросы
+  # no_resolv: false                # не использовать resolv.conf
+  # log_queries: false              # логировать все DNS-запросы
+  # no_hosts: false                 # не читать /etc/hosts
+  # strictbind: false               # строгая привязка к указанному интерфейсу
+  # dnssec: false                   # включить DNSSEC
+  # regdhcpdomain: ""               # домен для DHCP-записей
+  # dns_forward_max: null           # макс. одновременных DNS-запросов
+  # cache_size: null                # размер DNS-кэша (0 = отключить)
+  # local_ttl: null                 # TTL локальных записей (сек)
+  # add_mac: false                  # добавлять MAC-адрес в DNS-запросы
+
+  # Статические DNS/DHCP записи:
+  # hosts:
+  #   - host: printer               # имя хоста (без домена)
+  #     domain: home.local
+  #     ip: 192.168.1.20
+  #     descr: "Network printer"
+  #     mac: "aa:bb:cc:dd:ee:ff"    # привязка по MAC (статическая аренда DHCP)
+
+  # Перенаправление домена на другой DNS:
+  # domainoverrides:
+  #   - domain: corp.example.com
+  #     ip: 10.0.0.53
+  #     descr: "Corporate DNS"
+
+  # Кастомные DHCP-опции:
+  # dhcp_options:
+  #   - number: "6"                 # номер DHCP-опции
+  #     value: "8.8.8.8,8.8.4.4"   # значение
+  #   - tag: vlan10                 # опционально: тег DHCP
+  #     number: "3"                 # option 3 = router
+  #     value: "192.168.10.1"
 
 # ==============================================================================
 # UNBOUND DNS RESOLVER
@@ -461,6 +634,34 @@ unbound:
   # cache_max_ttl: 86400
   # cache_min_ttl: 0
   # custom_options: ""              # сырые строки unbound.conf
+  # port: ""                        # порт прослушивания (пусто = 53)
+  # stats: false                    # включить сбор статистики
+  # noarecords: false               # не возвращать A-записи
+  # noreglladdr6: false             # не регистрировать link-local IPv6 адреса
+  # txtsupport: false               # поддержка TXT-записей
+  # safesearch: false               # принудительный SafeSearch
+  # local_zone_type: ""             # тип локальной зоны (typetransparent | refuse и др.)
+  # enable_wpad: false              # WPAD (Web Proxy Auto-Discovery)
+  # dnssecstripped: false           # принимать stripped DNSSEC ответы
+  # belownxdomain: false            # NXDOMAIN для поддоменов
+  # aggressivensec: false           # агрессивная NSEC-кэширование (RFC8198)
+  # serveexpired: false             # отдавать просроченные записи из кэша
+  # serveexpiredttl: null           # TTL для просроченных записей (сек)
+  # serveexpiredttlreset: false     # сбрасывать TTL при обновлении
+  # serveexpiredclienttimeout: null # таймаут клиента при обновлении кэша (мс)
+  # qnameminstrict: false           # строгая QNAME минимизация
+  # extendedstatistics: false       # расширенная статистика
+  # regdhcp: false                  # регистрировать DHCP-аренды в DNS
+  # regdhcpstatic: false            # регистрировать статические DHCP-резервации
+  # regdhcpdomain: ""               # домен для DHCP-записей
+  # msgcachesize: null              # размер message кэша (МБ)
+  # rrsetcachesize: null            # размер rrset кэша (МБ)
+  # outgoingnumtcp: null            # количество исходящих TCP-соединений
+  # incomingnumtcp: null            # количество входящих TCP-соединений
+  # privatedomain: []               # приватные домены (список)
+  # privateaddress: []              # приватные адреса (список CIDR)
+  # insecuredomain: []              # домены без DNSSEC-проверки (список)
+  # dns64prefix: ""                 # IPv6-префикс для DNS64 (напр. 64:ff9b::/96)
 
   # Переопределения отдельных хостов:
   # hosts:
@@ -468,10 +669,15 @@ unbound:
   #     domain: home.local
   #     ip: 192.168.1.5
   #     descr: "Office printer"
-  #   - host: nas
-  #     domain: home.local
-  #     ip: 192.168.1.20
-  #     descr: "NAS storage"
+  #     rr: ""                      # тип записи (A, AAAA, MX и др.)
+  #     mxprio: ""                  # приоритет MX
+  #     ttl: ""                     # TTL записи
+  #     txtdata: ""                 # TXT-данные
+  #     addptr: false               # добавить PTR-запись
+  #     alias:                      # алиасы этого хоста
+  #       - host: www
+  #         domain: home.local
+  #         descr: "Web alias"
 
   # Перенаправление домена на другой DNS:
   # domainoverrides:
@@ -481,6 +687,21 @@ unbound:
   #   - domain: ad.local
   #     ip: 192.168.1.250
   #     descr: "Active Directory DNS"
+
+  # Списки доступа к DNS (ACL):
+  # acls:
+  #   - aclname: home_network
+  #     aclaction: allow            # allow | deny | refuse | allow_snoop
+  #     description: "Home LAN"
+  #     networks:
+  #       - 192.168.1.0/24
+  #       - 10.0.0.0/8
+
+  # DNS-over-TLS (upstream):
+  # dots:
+  #   - server: 1.1.1.1
+  #     port: "853"
+  #     verify: cloudflare-dns.com   # проверять сертификат по имени (пусто = любой)
 
 # ==============================================================================
 # NTP (ntpd)
@@ -501,9 +722,27 @@ ntpd:
     #   pool: false
     #   prefer: false
     #   noselect: false             # не использовать для синхронизации (только мониторинг)
+    #   iburst: false               # быстрая начальная синхронизация (iburst)
 
   # interface: ""                   # bind только на этот интерфейс (пусто = все)
   # orphan: 12                      # orphan stratum при отсутствии upstream
+  # maxclock: null                  # максимум одновременно используемых источников
+  # clientmode: false               # только клиент, не сервер
+  # clockstats: false               # логировать clock statistics
+  # kod: false                      # Kiss-o'-Death (ограничение flood-запросов)
+  # limited: false                  # ограничить запросы от клиентов
+  # nomodify: false                 # запретить клиентам изменять конфигурацию
+  # nopeer: false                   # запретить незапрошенные peer-запросы
+  # noserve: false                  # не обслуживать клиентов
+  # notrap: false                   # запретить trap-сообщения
+  # query: false                    # разрешить ntpq/ntpdc-запросы
+  # logpeer: false                  # логировать peer-события
+  # logsys: false                   # логировать системные события
+  # loopstats: false                # логировать статистику loop-фильтра
+  # peerstats: false                # логировать статистику peer'ов
+  # statsgraph: false               # отображать график статистики в GUI
+  # leapsec: ""                     # leap seconds файл (base64)
+  # custom_options: ""              # произвольные опции ntpd.conf
 
 # ==============================================================================
 # PKI — сертификаты и центры сертификации

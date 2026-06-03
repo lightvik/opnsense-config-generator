@@ -1,0 +1,19 @@
+<ntpd>
+  <prefer>0.pool.ntp.org</prefer>
+  <ispool>1.pool.ntp.org</ispool>
+  <noselect>2.pool.ntp.org</noselect>
+  <iburst>0.pool.ntp.org 1.pool.ntp.org</iburst>
+  <orphan>10</orphan>
+  <clientmode/>
+  <kod/>
+  <limited/>
+  <nomodify/>
+  <nopeer/>
+  <notrap/>
+  <logpeer/>
+  <loopstats/>
+  <peerstats/>
+  <statsgraph/>
+  <custom_options>restrict 127.0.0.1
+restrict ::1</custom_options>
+</ntpd>

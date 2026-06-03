@@ -1,0 +1,28 @@
+outbound_rules:
+  - interface: wan
+    ipprotocol: inet
+    protocol: tcp
+    source:
+      network: 192.168.1.0/24
+    destination:
+      any: true
+    target: ""
+    descr: Outbound NAT rule
+    log: true
+    tag: tagged_traffic
+    category: outbound
+port_forwards:
+  - interface: wan
+    ipprotocol: inet
+    protocol: tcp
+    source:
+      any: true
+    destination:
+      address: 1.2.3.4
+      port: "80"
+    target: 192.168.1.100
+    local-port: "8080"
+    descr: HTTP forward
+    natreflection: enable
+    nosync: true
+    sequence: 10
