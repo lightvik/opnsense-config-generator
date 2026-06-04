@@ -51,7 +51,7 @@ config.yaml.j2  →  build/config.xml  →  output/opnsense.qcow2
 docker run \
   --rm \
   --volume "$(pwd):/work" \
-  ghcr.io/lightvik/opnsense-config-generator:opnsense-26.1.6_v1.0.0
+  ghcr.io/lightvik/opnsense-config-generator:latest
 ```
 
 С явными путями:
@@ -60,7 +60,7 @@ docker run \
 docker run \
   --rm \
   --volume "$(pwd):/work" \
-  ghcr.io/lightvik/opnsense-config-generator:opnsense-26.1.6_v1.0.0 render \
+  ghcr.io/lightvik/opnsense-config-generator:latest render \
   --template config.yaml.j2 \
   --intermediate build/config.yaml \
   --output build/config.xml
