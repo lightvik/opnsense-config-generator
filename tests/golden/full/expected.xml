@@ -218,54 +218,6 @@
       <enabled>1</enabled>
     </alias>
   </aliases>
-  <filter>
-    <rule>
-      <type>pass</type>
-      <ipprotocol>inet</ipprotocol>
-      <descr>Default allow LAN to any rule</descr>
-      <interface>lan</interface>
-      <direction>in</direction>
-      <quick/>
-      <source>
-        <network>lan</network>
-      </source>
-      <destination>
-        <any/>
-      </destination>
-      <tracker>33658ee1-3dbc-5ed1-9985-caf743ab30a1</tracker>
-    </rule>
-    <rule>
-      <type>pass</type>
-      <ipprotocol>inet6</ipprotocol>
-      <descr>Default allow LAN IPv6 to any rule</descr>
-      <interface>lan</interface>
-      <direction>in</direction>
-      <quick/>
-      <source>
-        <network>lan</network>
-      </source>
-      <destination>
-        <any/>
-      </destination>
-      <tracker>65c3e472-5789-5c59-bc5c-9d841879268b</tracker>
-    </rule>
-    <rule>
-      <type>block</type>
-      <ipprotocol>inet</ipprotocol>
-      <descr>Block RFC1918 from DMZ</descr>
-      <log/>
-      <interface>lan</interface>
-      <direction>in</direction>
-      <quick/>
-      <source>
-        <network>opt1</network>
-      </source>
-      <destination>
-        <address>RFC1918</address>
-      </destination>
-      <tracker>f6b31aeb-21da-50b3-992f-bd74a8118ee0</tracker>
-    </rule>
-  </filter>
   <nat>
     <outbound>
       <mode>hybrid</mode>
@@ -343,6 +295,63 @@
     <ispool>0.opnsense.pool.ntp.org 1.opnsense.pool.ntp.org 2.opnsense.pool.ntp.org</ispool>
   </ntpd>
   <OPNsense>
+    <Firewall>
+      <Filter version="1.0.4" description="Firewall rules (new)">
+        <rules>
+          <rule uuid="33658ee1-3dbc-5ed1-9985-caf743ab30a1">
+            <enabled>1</enabled>
+            <sequence>10</sequence>
+            <action>pass</action>
+            <quick>1</quick>
+            <interface>lan</interface>
+            <direction>in</direction>
+            <ipprotocol>inet</ipprotocol>
+            <protocol>any</protocol>
+            <source_net>lan</source_net>
+            <source_not>0</source_not>
+            <destination_net>any</destination_net>
+            <destination_not>0</destination_not>
+            <log>0</log>
+            <description>Default allow LAN to any rule</description>
+          </rule>
+          <rule uuid="65c3e472-5789-5c59-bc5c-9d841879268b">
+            <enabled>1</enabled>
+            <sequence>20</sequence>
+            <action>pass</action>
+            <quick>1</quick>
+            <interface>lan</interface>
+            <direction>in</direction>
+            <ipprotocol>inet6</ipprotocol>
+            <protocol>any</protocol>
+            <source_net>lan</source_net>
+            <source_not>0</source_not>
+            <destination_net>any</destination_net>
+            <destination_not>0</destination_not>
+            <log>0</log>
+            <description>Default allow LAN IPv6 to any rule</description>
+          </rule>
+          <rule uuid="f6b31aeb-21da-50b3-992f-bd74a8118ee0">
+            <enabled>1</enabled>
+            <sequence>30</sequence>
+            <action>block</action>
+            <quick>1</quick>
+            <interface>lan</interface>
+            <direction>in</direction>
+            <ipprotocol>inet</ipprotocol>
+            <protocol>any</protocol>
+            <source_net>opt1</source_net>
+            <source_not>0</source_not>
+            <destination_net>RFC1918</destination_net>
+            <destination_not>0</destination_not>
+            <log>1</log>
+            <description>Block RFC1918 from DMZ</description>
+          </rule>
+        </rules>
+        <snatrules/>
+        <npt/>
+        <onetoone/>
+      </Filter>
+    </Firewall>
     <wireguard>
       <general>
         <enabled>1</enabled>

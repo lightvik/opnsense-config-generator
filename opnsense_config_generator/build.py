@@ -68,7 +68,6 @@ def build_xml(cfg: OpnSenseConfig) -> bytes:
         if optional is not None:
             root.append(optional)
 
-    root.append(build_filter(cfg.filter))
     root.append(build_nat(cfg.nat))
 
     dnsmasq = build_dnsmasq(cfg.dnsmasq)
@@ -85,7 +84,7 @@ def build_xml(cfg: OpnSenseConfig) -> bytes:
         root.append(ntpd)
 
     # MVC plugins go under <OPNsense>
-    mvc_children = []
+    mvc_children = [build_filter(cfg.filter)]
     for builder, mvc_cfg in [
         (build_wireguard, cfg.wireguard),
         (build_openvpn, cfg.openvpn),

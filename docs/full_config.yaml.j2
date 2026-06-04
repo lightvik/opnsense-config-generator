@@ -366,6 +366,19 @@ interfaces:
 # ==============================================================================
 # FIREWALL RULES
 # ==============================================================================
+# Инструмент генерирует новый MVC-формат: <OPNsense><Firewall><Filter><rules>
+#
+# DEPRECATED (старый формат, OPNsense ещё принимает, но больше не генерируется):
+#   <filter>
+#     <rule>
+#       <type>pass</type>
+#       <ipprotocol>inet</ipprotocol>
+#       <interface>lan</interface>
+#       <source><network>lan</network></source>
+#       <destination><any/></destination>
+#       <descr>Default allow LAN to any rule</descr>
+#     </rule>
+#   </filter>
 filter:
   rules:
     # Разрешить весь трафик с LAN наружу (IPv4)

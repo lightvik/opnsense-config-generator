@@ -1,122 +1,115 @@
 from lxml import etree
 
+from opnsense_config_generator.builders.base import append_if
 from opnsense_config_generator.models.filter import FilterConfig, FilterRule, RuleAddress
 from opnsense_config_generator.uuid_utils import make_uuid
 from opnsense_config_generator.xml_utils import sub
 
+_STATETYPE_MAP = {
+    "keep state": "keep",
+    "synproxy state": "synproxy",
+    "sloppy state": "sloppy",
+    "modulate state": "modulate",
+    "none": "none",
+}
+
 
 def build_filter(cfg: FilterConfig) -> etree._Element:
-    filter_el = etree.Element("filter")
+    firewall_el = etree.Element("Firewall")
+    filter_el = etree.SubElement(firewall_el, "Filter")
+    filter_el.set("version", "1.0.4")
+    filter_el.set("description", "Firewall rules (new)")
+
+    rules_el = etree.SubElement(filter_el, "rules")
     for i, rule in enumerate(cfg.rules):
-        _build_rule(filter_el, rule, i)
-    return filter_el
+        _build_rule(rules_el, rule, i)
+
+    etree.SubElement(filter_el, "snatrules")
+    etree.SubElement(filter_el, "npt")
+    etree.SubElement(filter_el, "onetoone")
+
+    return firewall_el
+
+
+def _resolve_net(addr: RuleAddress) -> str:
+    if addr.any:
+        return "any"
+    if addr.network:
+        return addr.network
+    if addr.address:
+        return addr.address
+    return "any"
 
 
 def _build_rule(parent: etree._Element, rule: FilterRule, idx: int) -> None:
+    uuid = rule.tracker or make_uuid("filter", f"{rule.interface}:{idx}:{rule.descr}")
     r = etree.SubElement(parent, "rule")
-    sub(r, "type", rule.type)
-    sub(r, "ipprotocol", rule.ipprotocol)
-    if rule.descr:
-        sub(r, "descr", rule.descr)
-    if rule.disabled:
-        sub(r, "disabled")
-    if rule.log:
-        sub(r, "log")
-    sub(r, "interface", rule.interface)
-    if rule.direction:
-        sub(r, "direction", rule.direction)
-    if rule.protocol:
-        sub(r, "protocol", rule.protocol)
-    if rule.statetype:
-        sub(r, "statetype", rule.statetype)
-    if rule.quick:
-        sub(r, "quick")
-    if rule.floating:
-        sub(r, "floating", "yes")
+    r.set("uuid", uuid)
 
-    _build_address(r, "source", rule.source)
-    _build_address(r, "destination", rule.destination)
+    sub(r, "enabled", "0" if rule.disabled else "1")
+    sub(r, "sequence", str((idx + 1) * 10))
+    sub(r, "action", rule.type)
+    sub(r, "quick", "1" if rule.quick else "0")
+    sub(r, "interface", rule.interface)
+    sub(r, "direction", rule.direction or "in")
+    sub(r, "ipprotocol", rule.ipprotocol)
+    sub(r, "protocol", rule.protocol or "any")
+
+    sub(r, "source_net", _resolve_net(rule.source))
+    sub(r, "source_not", "1" if rule.source.invert else "0")
+    append_if(r, "source_port", rule.source.port)
+
+    sub(r, "destination_net", _resolve_net(rule.destination))
+    sub(r, "destination_not", "1" if rule.destination.invert else "0")
+    append_if(r, "destination_port", rule.destination.port)
+
+    sub(r, "log", "1" if rule.log else "0")
+    append_if(r, "description", rule.descr)
+
+    if rule.statetype:
+        append_if(r, "statetype", _STATETYPE_MAP.get(rule.statetype, rule.statetype))
+
+    append_if(r, "state-policy", rule.state_policy)
+    append_if(r, "gateway", rule.gateway)
+    append_if(r, "replyto", rule.reply_to)
+    if rule.disablereplyto:
+        sub(r, "disablereplyto", "1")
 
     if rule.icmptype:
         sub(r, "icmptype", ",".join(rule.icmptype))
     if rule.icmp6type:
-        sub(r, "icmp6-type", ",".join(rule.icmp6type))
-    if rule.gateway:
-        sub(r, "gateway", rule.gateway)
-    if rule.reply_to:
-        sub(r, "reply-to", rule.reply_to)
-    if rule.disablereplyto:
-        sub(r, "disablereplyto")
-    if rule.sched:
-        sub(r, "sched", rule.sched)
-    if rule.shaper1:
-        sub(r, "shaper1", rule.shaper1)
-    if rule.shaper2:
-        sub(r, "shaper2", rule.shaper2)
-    if rule.set_prio:
-        sub(r, "set-prio", rule.set_prio)
-    if rule.set_prio_low:
-        sub(r, "set-prio-low", rule.set_prio_low)
-    if rule.prio:
-        sub(r, "prio", rule.prio)
-    if rule.tos:
-        sub(r, "tos", rule.tos)
+        sub(r, "icmp6type", ",".join(rule.icmp6type))
+
     if rule.tcpflags1:
         sub(r, "tcpflags1", rule.tcpflags1)
     if rule.tcpflags2:
         sub(r, "tcpflags2", rule.tcpflags2)
     if rule.tcpflags_any:
-        sub(r, "tcpflags_any")
+        sub(r, "tcpflags_any", "1")
+
     if rule.allowopts:
-        sub(r, "allowopts")
-    if rule.overload:
-        sub(r, "overload", rule.overload)
-    if rule.statetimeout:
-        sub(r, "statetimeout", rule.statetimeout)
-    if rule.max_src_conn_rate:
-        sub(r, "max-src-conn-rate", rule.max_src_conn_rate)
-    if rule.max_src_conn_rates:
-        sub(r, "max-src-conn-rates", rule.max_src_conn_rates)
-    if rule.tag:
-        sub(r, "tag", rule.tag)
-    if rule.tagged:
-        sub(r, "tagged", rule.tagged)
+        sub(r, "allowopts", "1")
     if rule.nosync:
-        sub(r, "nosync")
+        sub(r, "nosync", "1")
     if rule.nopfsync:
-        sub(r, "nopfsync")
-    if rule.categories:
-        sub(r, "categories", rule.categories)
-    if rule.divert_to:
-        sub(r, "divert-to", rule.divert_to)
-    if rule.state_policy:
-        sub(r, "state-policy", rule.state_policy)
-    if rule.os:
-        sub(r, "os", rule.os)
-    if rule.max:
-        sub(r, "max", rule.max)
-    if rule.max_src_nodes:
-        sub(r, "max-src-nodes", rule.max_src_nodes)
-    if rule.max_src_conn:
-        sub(r, "max-src-conn", rule.max_src_conn)
-    if rule.max_src_states:
-        sub(r, "max-src-states", rule.max_src_states)
+        sub(r, "nopfsync", "1")
 
-    tracker = rule.tracker or make_uuid("filter", f"{rule.interface}:{idx}:{rule.descr}")
-    sub(r, "tracker", tracker)
-    if rule.associated_rule_id:
-        sub(r, "associated-rule-id", rule.associated_rule_id)
-
-
-def _build_address(parent: etree._Element, tag: str, addr: RuleAddress) -> None:
-    el = etree.SubElement(parent, tag)
-    if addr.any:
-        etree.SubElement(el, "any")
-    elif addr.network:
-        invert = "!" if addr.invert else ""
-        sub(el, "network", f"{invert}{addr.network}")
-    elif addr.address:
-        invert = "!" if addr.invert else ""
-        sub(el, "address", f"{invert}{addr.address}")
-    if addr.port:
-        sub(el, "port", addr.port)
+    append_if(r, "max", rule.max)
+    append_if(r, "max-src-nodes", rule.max_src_nodes)
+    append_if(r, "max-src-conn", rule.max_src_conn)
+    append_if(r, "max-src-states", rule.max_src_states)
+    append_if(r, "max-src-conn-rate", rule.max_src_conn_rate)
+    append_if(r, "max-src-conn-rates", rule.max_src_conn_rates)
+    append_if(r, "overload", rule.overload)
+    append_if(r, "statetimeout", rule.statetimeout)
+    append_if(r, "tag", rule.tag)
+    append_if(r, "tagged", rule.tagged)
+    append_if(r, "prio", rule.prio)
+    append_if(r, "set-prio", rule.set_prio)
+    append_if(r, "set-prio-low", rule.set_prio_low)
+    append_if(r, "tos", rule.tos)
+    append_if(r, "shaper1", rule.shaper1)
+    append_if(r, "shaper2", rule.shaper2)
+    append_if(r, "sched", rule.sched)
+    append_if(r, "categories", rule.categories)
+    append_if(r, "divert-to", rule.divert_to)

@@ -41,9 +41,11 @@ def test_xml_has_required_sections() -> None:
     cfg = OpnSenseConfig.model_validate(data)
     xml_bytes = build_xml(cfg)
     root = etree.fromstring(xml_bytes)
-    required = {"system", "interfaces", "filter", "nat", "unbound"}
+    required_top = {"system", "interfaces", "nat", "unbound"}
     present = {child.tag for child in root}
-    assert required <= present
+    assert required_top <= present
+    # filter rules are now in MVC section OPNsense/Firewall/Filter
+    assert root.find("OPNsense/Firewall/Filter") is not None
 
 
 def test_xml_password_is_bcrypt() -> None:
