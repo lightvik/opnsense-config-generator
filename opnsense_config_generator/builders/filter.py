@@ -1,3 +1,6 @@
+import ipaddress
+import re as _re
+
 from lxml import etree
 
 from opnsense_config_generator.builders.base import append_if
@@ -31,12 +34,32 @@ def build_filter(cfg: FilterConfig) -> etree._Element:
     return firewall_el
 
 
+_IFACE_NAME_RE = _re.compile(r"^[a-z][a-z0-9]*$")
+
+
+def _is_interface_name(s: str) -> bool:
+    """Return True if s is an interface name (wan/lan/opt1…), not an IP or named alias."""
+    try:
+        ipaddress.ip_address(s)
+        return False
+    except ValueError:
+        pass
+    try:
+        ipaddress.ip_network(s, strict=False)
+        return False
+    except ValueError:
+        pass
+    return bool(_IFACE_NAME_RE.match(s))
+
+
 def _resolve_net(addr: RuleAddress) -> str:
     if addr.any:
         return "any"
     if addr.network:
         return addr.network
     if addr.address:
+        if _is_interface_name(addr.address):
+            return addr.address + "ip"
         return addr.address
     return "any"
 
