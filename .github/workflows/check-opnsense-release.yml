@@ -32,13 +32,16 @@ jobs:
           exit_code=$?
           echo "$output"
           if [ "$exit_code" -eq 2 ]; then
+            # New release detected — this is a notification, not a CI failure.
             version=$(echo "$output" | grep -oP 'NEW RELEASE DETECTED: \K[\d.]+')
             echo "new_version=$version" >> "$GITHUB_OUTPUT"
+            echo "$output" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
           fi
           exit "$exit_code"
 
       - name: Open issue for new version
-        if: failure() && steps.check.outputs.new_version != ''
+        if: steps.check.outputs.new_version != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEW_VERSION: ${{ steps.check.outputs.new_version }}
